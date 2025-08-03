@@ -20,20 +20,22 @@ if (!apiKey) {
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const generationConfig = {
-  temperature: 0.3,
-  topP: 0.95,
-  topK: 64,
-  maxOutputTokens: 8192,
+  temperature: 0,
+  topP: 0.8,
+  topK: 20,
+  maxOutputTokens: 512,
   responseMimeType: "text/plain",
 };
 
+
 const codeCompletionConfig = {
-  temperature: 0.1,
-  topP: 0.95,
-  topK: 40,
-  maxOutputTokens: 150,
+  temperature: 0,
+  topP: 0.8,
+  topK: 20,
+  maxOutputTokens: 100,
   responseMimeType: "text/plain",
 };
+
 
 async function initializeModel(config = generationConfig) {
   try {
