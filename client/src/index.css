@@ -12,16 +12,17 @@ body {
     "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 code {
   font-family: "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar for Copilot-like interface */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -29,23 +30,174 @@ code {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.5);
-  border-radius: 3px;
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.7);
+  background: rgba(156, 163, 175, 0.5);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(75, 85, 99, 0.5);
+  background: rgba(75, 85, 99, 0.3);
+  background-clip: content-box;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(75, 85, 99, 0.7);
+  background: rgba(75, 85, 99, 0.5);
+  background-clip: content-box;
 }
 
 /* Smooth transitions for theme changes */
 * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Monaco Editor customizations */
+.monaco-editor {
+  border-radius: 6px;
+}
+
+.monaco-editor .margin {
+  background-color: transparent !important;
+}
+
+/* Chat message animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-message {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Typing indicator */
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.typing-dot {
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+/* Focus styles for better accessibility */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Custom focus ring for dark mode */
+.dark button:focus-visible,
+.dark input:focus-visible {
+  outline-color: #60a5fa;
+}
+
+/* Sidebar animations */
+.sidebar-container {
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: right center;
+}
+
+.sidebar-open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.sidebar-closed {
+  transform: translateX(100%);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.quick-actions-container {
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: right center;
+}
+
+.quick-actions-open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.quick-actions-closed {
+  transform: translateX(100%);
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Main content animation */
+.main-content {
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+/* Smooth button animations */
+.smooth-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smooth-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Sidebar slide animation */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.sidebar-slide-in {
+  animation: slideInFromRight 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.sidebar-slide-out {
+  animation: slideOutToRight 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }

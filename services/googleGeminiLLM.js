@@ -27,7 +27,6 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
-
 const codeCompletionConfig = {
   temperature: 0,
   topP: 0.8,
@@ -36,6 +35,13 @@ const codeCompletionConfig = {
   responseMimeType: "text/plain",
 };
 
+const codeModificationConfig = {
+  temperature: 0.2, // Slightly higher to allow for creativity in solutions
+  topP: 0.8,
+  topK: 20,
+  maxOutputTokens: 2048, // Higher token limit for full code modifications
+  responseMimeType: "text/plain",
+};
 
 async function initializeModel(config = generationConfig) {
   try {
@@ -205,5 +211,98 @@ export async function generateText(prompt, config = generationConfig) {
   } catch (error) {
     console.error("Gemini Text Generation Error:", error);
     throw new Error("Failed to generate text from Gemini");
+  }
+}
+
+// Function for code modification based on user requests
+export async function modifyCode(
+  message,
+  currentCode,
+  language = "javascript"
+) {
+  try {
+    // First get the modified code
+    const modifiedCodeModel = await initializeModel(codeModificationConfig);
+    const codePrompt = `You are an expert AI coding assistant with deep knowledge of ${language}. The user has requested: "${message}".
+    
+Current code:
+\`\`\`${language}
+${currentCode}
+\`\`\`
+
+TASK: Analyze the current code and the user's request carefully. Based on the request:
+1. Understand what specific code changes are needed
+2. Implement these changes while preserving the existing code structure and style where appropriate
+3. Make your changes harmonize with the existing code (variable naming conventions, formatting, etc.)
+4. If adding new functionality, make sure it integrates well with existing code
+5. If fixing issues, ensure you address the root cause
+6. Return ONLY the fully modified code - no explanations or comments about your process
+
+IMPORTANT RULES:
+- Return ONLY the complete, working code that incorporates the requested changes
+- Do NOT include markdown formatting, backticks, or language identifiers
+- Do NOT include any explanations of what you did - just the code
+- If you cannot make meaningful changes based on the request, return the original code unmodified
+- Make sure the code is syntactically correct and would run without errors
+
+Return the COMPLETE, MODIFIED CODE (not just the changed parts):`;
+
+    const codeResult = await modifiedCodeModel.generateContent([codePrompt]);
+    const codeResponse = await codeResult.response;
+
+    // Clean the response to ensure it's only code
+    const modifiedCode = codeResponse
+      .text()
+      .trim()
+      .replace(/^```[^\n]*\n|```$/g, "") // Remove code blocks if any
+      .replace(/^[a-zA-Z0-9]+:/g, "") // Remove any prefixes like "JavaScript:" or "Python:"
+      .trim();
+
+    // Additional check to make sure we're not returning the same code
+    if (modifiedCode.trim() === currentCode.trim()) {
+      console.log("No changes made to the code by the AI");
+      return { code: currentCode, unchanged: true };
+    }
+
+    // Now get an explanation of what changes were made
+    const explanationModel = await initializeModel();
+    const explanationPrompt = `You are a helpful coding assistant. The user asked for this code change: "${message}".
+
+Original code:
+\`\`\`${language}
+${currentCode}
+\`\`\`
+
+Modified code:
+\`\`\`${language}
+${modifiedCode}
+\`\`\`
+
+Provide a concise explanation of what changes were made to fulfill the user's request. Be specific about what functions or features were added, modified, or fixed. Format your response as:
+
+"I've updated your code based on your request. Here's what I did:
+
+[Your explanation here]
+
+\`\`\`${language}
+[The full modified code will be added automatically]
+\`\`\`"
+
+Your explanation should only be 2-4 sentences and focus on the specific changes made:`;
+
+    const explanationResult = await explanationModel.generateContent([
+      explanationPrompt,
+    ]);
+    const explanationResponse = await explanationResult.response;
+    const explanation = explanationResponse.text().trim();
+
+    return {
+      code: modifiedCode,
+      explanation: explanation,
+      unchanged: false,
+    };
+  } catch (error) {
+    console.error("Gemini Code Modification Error:", error);
+    throw new Error("Failed to modify code using Gemini");
   }
 }
