@@ -340,8 +340,8 @@ const CodeEditor = ({
     let currentText = "";
 
     // Animation speed configuration
-    const baseDelay = 30; // milliseconds between characters
-    const variationFactor = 0.5; // randomness in typing speed
+    const baseDelay = 10; // milliseconds between characters
+    const variationFactor = 0.1; // randomness in typing speed
 
     // Create a "typing" effect by progressively adding tokens
     for (let i = 0; i < tokens.length; i++) {

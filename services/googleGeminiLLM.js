@@ -236,14 +236,16 @@ TASK: Analyze the current code and the user's request carefully. Based on the re
 3. Make your changes harmonize with the existing code (variable naming conventions, formatting, etc.)
 4. If adding new functionality, make sure it integrates well with existing code
 5. If fixing issues, ensure you address the root cause
-6. Return ONLY the fully modified code - no explanations or comments about your process
+6. Follow best practices and idioms specific to the ${language} language
+7. Return ONLY the fully modified code - no explanations or comments about your process
 
 IMPORTANT RULES:
 - Return ONLY the complete, working code that incorporates the requested changes
 - Do NOT include markdown formatting, backticks, or language identifiers
 - Do NOT include any explanations of what you did - just the code
 - If you cannot make meaningful changes based on the request, return the original code unmodified
-- Make sure the code is syntactically correct and would run without errors
+- Make sure the code is syntactically correct and would run without errors in ${language}
+- For compiled languages like Java or C++, ensure proper imports/includes are present
 
 Return the COMPLETE, MODIFIED CODE (not just the changed parts):`;
 
@@ -278,7 +280,7 @@ Modified code:
 ${modifiedCode}
 \`\`\`
 
-Provide a concise explanation of what changes were made to fulfill the user's request. Be specific about what functions or features were added, modified, or fixed. Format your response as:
+Provide a concise explanation of what changes were made to fulfill the user's request. Be specific about what functions or features were added, modified, or fixed. Consider the specific syntax and conventions of the ${language} language in your explanation. Format your response as:
 
 "I've updated your code based on your request. Here's what I did:
 
