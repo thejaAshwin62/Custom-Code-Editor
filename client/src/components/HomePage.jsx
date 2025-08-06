@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import {
   RiSparklingLine,
   RiRocketLine,
@@ -11,42 +12,47 @@ import {
   RiLightbulbLine,
   RiFlashlightLine,
   RiBrainLine,
-} from "react-icons/ri"
+} from "react-icons/ri";
 
-const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
-  const [activeFeature, setActiveFeature] = useState(0)
-  const [isVisible, setIsVisible] = useState(false)
+const HomePage = () => {
+  const { theme, onGetStarted, onShowCodeTreasure } = useOutletContext();
+  const [activeFeature, setActiveFeature] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true)
-  }, [])
+    setIsVisible(true);
+  }, []);
 
   const features = [
     {
       icon: <RiBrainLine className="w-8 h-8" />,
       title: "AI-Powered Coding",
-      description: "Get intelligent code suggestions, explanations, and improvements powered by advanced AI models.",
+      description:
+        "Get intelligent code suggestions, explanations, and improvements powered by advanced AI models.",
       gradient: "from-emerald-500 to-teal-600",
     },
     {
       icon: <RiFlashlightLine className="w-8 h-8" />,
       title: "Real-time Collaboration",
-      description: "Work together with your team in real-time with synchronized code editing and AI assistance.",
+      description:
+        "Work together with your team in real-time with synchronized code editing and AI assistance.",
       gradient: "from-blue-500 to-indigo-600",
     },
     {
       icon: <RiLightbulbLine className="w-8 h-8" />,
       title: "Smart Code Analysis",
-      description: "Understand your code better with AI-driven analysis, performance insights, and optimization tips.",
+      description:
+        "Understand your code better with AI-driven analysis, performance insights, and optimization tips.",
       gradient: "from-purple-500 to-pink-600",
     },
     {
       icon: <RiRocketLine className="w-8 h-8" />,
       title: "Lightning Fast",
-      description: "Experience blazing-fast performance with optimized AI inference and responsive UI interactions.",
+      description:
+        "Experience blazing-fast performance with optimized AI inference and responsive UI interactions.",
       gradient: "from-orange-500 to-red-600",
     },
-  ]
+  ];
 
   const testimonials = [
     {
@@ -73,7 +79,7 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
         "Game-changer for our team. The collaborative features and AI insights have improved our code quality significantly.",
       rating: 5,
     },
-  ]
+  ];
 
   const pricingPlans = [
     {
@@ -81,7 +87,12 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
       price: "Free",
       period: "forever",
       description: "Perfect for individual developers getting started",
-      features: ["AI Code Suggestions", "Basic Code Analysis", "5 Projects", "Community Support"],
+      features: [
+        "AI Code Suggestions",
+        "Basic Code Analysis",
+        "5 Projects",
+        "Community Support",
+      ],
       cta: "Get Started Free",
       popular: false,
     },
@@ -117,17 +128,17 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
       cta: "Contact Sales",
       popular: false,
     },
-  ]
+  ];
 
   const stats = [
     { value: "50K+", label: "Developers" },
     { value: "1M+", label: "Lines of Code" },
     { value: "99.9%", label: "Uptime" },
     { value: "24/7", label: "Support" },
-  ]
+  ];
 
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "bg-slate-950" : "bg-white"}`}>
+    <div className={`w-full ${theme === "dark" ? "bg-slate-950" : "bg-white"}`}>
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
@@ -170,13 +181,15 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 min-h-screen">
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center px-6 py-20">
           <div className="max-w-7xl mx-auto">
             <div
               className={`text-center transform transition-all duration-1000 ${
-                isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                isVisible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-10 opacity-0"
               }`}
             >
               {/* Hero Badge */}
@@ -193,7 +206,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
 
               {/* Hero Title */}
               <h1
-                className={`text-6xl md:text-8xl font-bold mb-8 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                className={`text-6xl md:text-8xl font-bold mb-8 ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
                 style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Code with
@@ -215,8 +230,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                 }`}
                 style={{ fontFamily: "Inter, sans-serif" }}
               >
-                Transform your development workflow with intelligent code suggestions, real-time collaboration, and
-                AI-powered insights that make you 10x more productive.
+                Transform your development workflow with intelligent code
+                suggestions, real-time collaboration, and AI-powered insights
+                that make you 10x more productive.
               </p>
 
               {/* Hero CTAs */}
@@ -247,7 +263,7 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                     <span>Code Treasure</span>
                   </span>
                 </button>
-                <button
+                {/* <button
                   className={`group px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 ${
                     theme === "dark"
                       ? "bg-slate-800/50 hover:bg-slate-800/70 text-white border border-slate-700/50 hover:border-slate-600/70 backdrop-blur-xl"
@@ -258,17 +274,23 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                     <RiPlayCircleLine className="w-5 h-5" />
                     <span>Watch Demo</span>
                   </span>
-                </button>
+                </button> */}
               </div>
 
               {/* Hero Image */}
               <div className="relative max-w-5xl mx-auto">
                 <div
                   className={`rounded-3xl overflow-hidden shadow-2xl border ${
-                    theme === "dark" ? "border-slate-700/50" : "border-gray-200/50"
+                    theme === "dark"
+                      ? "border-slate-700/50"
+                      : "border-gray-200/50"
                   } backdrop-blur-xl`}
                 >
-                  <img src="/ai-code-editor.png" alt="AI Code Studio Pro Interface" className="w-full h-auto" />
+                  <img
+                    src="/ai-code-editor.png"
+                    alt="AI Code Studio Pro Interface"
+                    className="w-full h-auto"
+                  />
                   {/* Overlay gradient */}
                   <div
                     className={`absolute inset-0 ${
@@ -288,7 +310,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                   style={{ animation: "float 3s ease-in-out infinite" }}
                 >
                   <RiSparklingLine
-                    className={`w-8 h-8 ${theme === "dark" ? "text-emerald-400" : "text-emerald-600"}`}
+                    className={`w-8 h-8 ${
+                      theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+                    }`}
                   />
                 </div>
               </div>
@@ -310,7 +334,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                   } shadow-2xl relative overflow-hidden`}
                   style={{
                     boxShadow: `inset 0 1px 0 ${
-                      theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.8)"
+                      theme === "dark"
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "rgba(255, 255, 255, 0.8)"
                     }, 0 25px 50px -12px rgba(0, 0, 0, 0.25)`,
                   }}
                 >
@@ -326,13 +352,20 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                   <div className="relative z-10 h-full flex flex-col">
                     <div className="mb-8">
                       <h2
-                        className={`text-4xl font-bold mb-4 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                        className={`text-4xl font-bold mb-4 ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
                         style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         Powerful Features
                       </h2>
-                      <p className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                        Everything you need to supercharge your development workflow
+                      <p
+                        className={`text-lg ${
+                          theme === "dark" ? "text-gray-300" : "text-gray-600"
+                        }`}
+                      >
+                        Everything you need to supercharge your development
+                        workflow
                       </p>
                     </div>
 
@@ -346,15 +379,17 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                                 ? "bg-slate-700/50 border border-slate-600/50"
                                 : "bg-white/50 border border-gray-300/50"
                               : theme === "dark"
-                                ? "hover:bg-slate-700/30 border border-transparent hover:border-slate-600/30"
-                                : "hover:bg-white/30 border border-transparent hover:border-gray-300/30"
+                              ? "hover:bg-slate-700/30 border border-transparent hover:border-slate-600/30"
+                              : "hover:bg-white/30 border border-transparent hover:border-gray-300/30"
                           } backdrop-blur-sm`}
                           onMouseEnter={() => setActiveFeature(index)}
                           style={{
                             boxShadow:
                               activeFeature === index
                                 ? `inset 0 1px 0 ${
-                                    theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.8)"
+                                    theme === "dark"
+                                      ? "rgba(255, 255, 255, 0.1)"
+                                      : "rgba(255, 255, 255, 0.8)"
                                   }`
                                 : "none",
                           }}
@@ -365,11 +400,19 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                             <div className="text-white">{feature.icon}</div>
                           </div>
                           <h3
-                            className={`text-xl font-semibold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                            className={`text-xl font-semibold mb-2 ${
+                              theme === "dark" ? "text-white" : "text-gray-900"
+                            }`}
                           >
                             {feature.title}
                           </h3>
-                          <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                          <p
+                            className={`text-sm ${
+                              theme === "dark"
+                                ? "text-gray-400"
+                                : "text-gray-600"
+                            }`}
+                          >
                             {feature.description}
                           </p>
                         </div>
@@ -389,7 +432,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                   } shadow-2xl relative overflow-hidden`}
                   style={{
                     boxShadow: `inset 0 1px 0 ${
-                      theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.8)"
+                      theme === "dark"
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "rgba(255, 255, 255, 0.8)"
                     }, 0 25px 50px -12px rgba(0, 0, 0, 0.25)`,
                   }}
                 >
@@ -403,7 +448,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
 
                   <div className="relative z-10 h-full flex flex-col justify-center">
                     <h3
-                      className={`text-2xl font-bold mb-8 text-center ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                      className={`text-2xl font-bold mb-8 text-center ${
+                        theme === "dark" ? "text-white" : "text-gray-900"
+                      }`}
                     >
                       Trusted by Developers
                     </h3>
@@ -412,12 +459,20 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                         <div key={index} className="text-center">
                           <div
                             className={`text-3xl font-bold mb-2 bg-gradient-to-r ${
-                              theme === "dark" ? "from-emerald-400 to-blue-400" : "from-emerald-600 to-blue-600"
+                              theme === "dark"
+                                ? "from-emerald-400 to-blue-400"
+                                : "from-emerald-600 to-blue-600"
                             } bg-clip-text text-transparent`}
                           >
                             {stat.value}
                           </div>
-                          <div className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                          <div
+                            className={`text-sm ${
+                              theme === "dark"
+                                ? "text-gray-400"
+                                : "text-gray-600"
+                            }`}
+                          >
                             {stat.label}
                           </div>
                         </div>
@@ -437,7 +492,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                   } shadow-2xl relative overflow-hidden`}
                   style={{
                     boxShadow: `inset 0 1px 0 ${
-                      theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.8)"
+                      theme === "dark"
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "rgba(255, 255, 255, 0.8)"
                     }, 0 25px 50px -12px rgba(0, 0, 0, 0.25)`,
                   }}
                 >
@@ -450,7 +507,11 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                   />
 
                   <div className="relative z-10 h-full flex flex-col">
-                    <h3 className={`text-2xl font-bold mb-6 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                    <h3
+                      className={`text-2xl font-bold mb-6 ${
+                        theme === "dark" ? "text-white" : "text-gray-900"
+                      }`}
+                    >
                       What Developers Say
                     </h3>
                     <div className="space-y-6 flex-1 overflow-y-auto">
@@ -464,7 +525,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                           } backdrop-blur-sm`}
                           style={{
                             boxShadow: `inset 0 1px 0 ${
-                              theme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.5)"
+                              theme === "dark"
+                                ? "rgba(255, 255, 255, 0.05)"
+                                : "rgba(255, 255, 255, 0.5)"
                             }`,
                           }}
                         >
@@ -476,21 +539,40 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                             />
                             <div>
                               <div
-                                className={`font-semibold text-sm ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                                className={`font-semibold text-sm ${
+                                  theme === "dark"
+                                    ? "text-white"
+                                    : "text-gray-900"
+                                }`}
                               >
                                 {testimonial.name}
                               </div>
-                              <div className={`text-xs ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                              <div
+                                className={`text-xs ${
+                                  theme === "dark"
+                                    ? "text-gray-400"
+                                    : "text-gray-600"
+                                }`}
+                              >
                                 {testimonial.role}
                               </div>
                             </div>
                           </div>
-                          <p className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                          <p
+                            className={`text-sm ${
+                              theme === "dark"
+                                ? "text-gray-300"
+                                : "text-gray-700"
+                            }`}
+                          >
                             "{testimonial.content}"
                           </p>
                           <div className="flex items-center space-x-1 mt-3">
                             {[...Array(testimonial.rating)].map((_, i) => (
-                              <RiStarFill key={i} className="w-4 h-4 text-yellow-400" />
+                              <RiStarFill
+                                key={i}
+                                className="w-4 h-4 text-yellow-400"
+                              />
                             ))}
                           </div>
                         </div>
@@ -508,12 +590,18 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2
-                className={`text-5xl font-bold mb-6 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                className={`text-5xl font-bold mb-6 ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
                 style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Choose Your Plan
               </h2>
-              <p className={`text-xl ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+              <p
+                className={`text-xl ${
+                  theme === "dark" ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
                 Start free, scale as you grow. No hidden fees.
               </p>
             </div>
@@ -528,12 +616,14 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                         ? "bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border-emerald-500/30 shadow-2xl shadow-emerald-500/20"
                         : "bg-gradient-to-br from-emerald-500/5 to-blue-500/5 border-emerald-500/20 shadow-2xl shadow-emerald-500/10"
                       : theme === "dark"
-                        ? "bg-gradient-to-br from-slate-800/60 to-slate-900/60 border-slate-700/50 hover:border-slate-600/70"
-                        : "bg-gradient-to-br from-white/60 to-gray-50/60 border-gray-200/50 hover:border-gray-300/70"
+                      ? "bg-gradient-to-br from-slate-800/60 to-slate-900/60 border-slate-700/50 hover:border-slate-600/70"
+                      : "bg-gradient-to-br from-white/60 to-gray-50/60 border-gray-200/50 hover:border-gray-300/70"
                   } shadow-2xl`}
                   style={{
                     boxShadow: `inset 0 1px 0 ${
-                      theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.8)"
+                      theme === "dark"
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "rgba(255, 255, 255, 0.8)"
                     }, 0 25px 50px -12px rgba(0, 0, 0, 0.25)`,
                   }}
                 >
@@ -545,8 +635,8 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                           ? "shadow-[inset_0_0_0_1px_rgba(16,185,129,0.2)]"
                           : "shadow-[inset_0_0_0_1px_rgba(16,185,129,0.3)]"
                         : theme === "dark"
-                          ? "shadow-[inset_0_0_0_1px_rgba(148,163,184,0.1)]"
-                          : "shadow-[inset_0_0_0_1px_rgba(148,163,184,0.2)]"
+                        ? "shadow-[inset_0_0_0_1px_rgba(148,163,184,0.1)]"
+                        : "shadow-[inset_0_0_0_1px_rgba(148,163,184,0.2)]"
                     }`}
                   />
 
@@ -564,33 +654,62 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
 
                   <div className="relative z-10">
                     <div className="text-center mb-8">
-                      <h3 className={`text-2xl font-bold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                      <h3
+                        className={`text-2xl font-bold mb-2 ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
                         {plan.name}
                       </h3>
                       <div className="mb-4">
-                        <span className={`text-4xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                        <span
+                          className={`text-4xl font-bold ${
+                            theme === "dark" ? "text-white" : "text-gray-900"
+                          }`}
+                        >
                           {plan.price}
                         </span>
                         {plan.period !== "contact us" && (
-                          <span className={`text-lg ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                          <span
+                            className={`text-lg ${
+                              theme === "dark"
+                                ? "text-gray-400"
+                                : "text-gray-600"
+                            }`}
+                          >
                             /{plan.period}
                           </span>
                         )}
                       </div>
-                      <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                      <p
+                        className={`text-sm ${
+                          theme === "dark" ? "text-gray-400" : "text-gray-600"
+                        }`}
+                      >
                         {plan.description}
                       </p>
                     </div>
 
                     <ul className="space-y-4 mb-8">
                       {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center space-x-3">
+                        <li
+                          key={featureIndex}
+                          className="flex items-center space-x-3"
+                        >
                           <RiCheckLine
                             className={`w-5 h-5 ${
-                              theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+                              theme === "dark"
+                                ? "text-emerald-400"
+                                : "text-emerald-600"
                             } flex-shrink-0`}
                           />
-                          <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                          <span
+                            className={`text-sm ${
+                              theme === "dark"
+                                ? "text-gray-300"
+                                : "text-gray-700"
+                            }`}
+                          >
                             {feature}
                           </span>
                         </li>
@@ -605,8 +724,8 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
                             ? "bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg shadow-emerald-500/25"
                             : "bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg shadow-emerald-500/25"
                           : theme === "dark"
-                            ? "bg-slate-700/50 hover:bg-slate-700/70 text-white border border-slate-600/50 hover:border-slate-600/70"
-                            : "bg-white/50 hover:bg-white/70 text-gray-900 border border-gray-300/50 hover:border-gray-400/70"
+                          ? "bg-slate-700/50 hover:bg-slate-700/70 text-white border border-slate-600/50 hover:border-slate-600/70"
+                          : "bg-white/50 hover:bg-white/70 text-gray-900 border border-gray-300/50 hover:border-gray-400/70"
                       } backdrop-blur-sm shadow-lg`}
                     >
                       {plan.cta}
@@ -629,7 +748,9 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
               } shadow-2xl relative overflow-hidden`}
               style={{
                 boxShadow: `inset 0 1px 0 ${
-                  theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.8)"
+                  theme === "dark"
+                    ? "rgba(255, 255, 255, 0.1)"
+                    : "rgba(255, 255, 255, 0.8)"
                 }, 0 25px 50px -12px rgba(0, 0, 0, 0.25)`,
               }}
             >
@@ -643,13 +764,20 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
 
               <div className="relative z-10">
                 <h2
-                  className={`text-4xl md:text-5xl font-bold mb-6 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                  className={`text-4xl md:text-5xl font-bold mb-6 ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
                   style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Ready to Transform Your Coding?
                 </h2>
-                <p className={`text-xl mb-8 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                  Join thousands of developers who are already coding smarter, not harder.
+                <p
+                  className={`text-xl mb-8 ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  Join thousands of developers who are already coding smarter,
+                  not harder.
                 </p>
                 <button
                   onClick={onGetStarted}
@@ -683,7 +811,7 @@ const HomePage = ({ theme, onGetStarted, onShowCodeTreasure }) => {
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
       `}</style>
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

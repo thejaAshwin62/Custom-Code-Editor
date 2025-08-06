@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import {
   RiSparklingLine,
   RiSearchLine,
@@ -12,19 +13,20 @@ import {
   RiCodeLine,
   RiTimeLine,
   RiUserLine,
-} from "react-icons/ri"
-import { useUser } from "@clerk/clerk-react"
-import { supabase, TABLES } from "../lib/supabase"
+} from "react-icons/ri";
+import { useUser } from "@clerk/clerk-react";
+import { supabase, TABLES } from "../lib/supabase";
 
-const CodeTreasure = ({ theme, onBack }) => {
-  const { user } = useUser()
-  const [savedCodes, setSavedCodes] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState("updated_at")
-  const [sortOrder, setSortOrder] = useState("desc")
-  const [filterLanguage, setFilterLanguage] = useState("all")
-  const [selectedCode, setSelectedCode] = useState(null)
+const CodeTreasure = () => {
+  const { theme, handleBackFromTreasure: onBack } = useOutletContext();
+  const { user } = useUser();
+  const [savedCodes, setSavedCodes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("updated_at");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [filterLanguage, setFilterLanguage] = useState("all");
+  const [selectedCode, setSelectedCode] = useState(null);
 
   const languages = [
     { id: "all", name: "All Languages", icon: "🌐" },
@@ -36,78 +38,92 @@ const CodeTreasure = ({ theme, onBack }) => {
     { id: "html", name: "HTML", icon: "🌐" },
     { id: "css", name: "CSS", icon: "🎨" },
     { id: "json", name: "JSON", icon: "📋" },
-  ]
+  ];
 
   const loadCodes = async () => {
-    if (!user) return
+    if (!user) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       let query = supabase
         .from(TABLES.USER_CODES)
-        .select('*')
-        .eq('user_id', user.id)
+        .select("*")
+        .eq("user_id", user.id);
 
       // Apply search filter
       if (searchTerm.trim()) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,code.ilike.%${searchTerm}%`)
+        query = query.or(
+          `title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,code.ilike.%${searchTerm}%`
+        );
       }
 
       // Apply language filter
       if (filterLanguage !== "all") {
-        query = query.eq('language', filterLanguage)
+        query = query.eq("language", filterLanguage);
       }
 
       // Apply sorting
-      query = query.order(sortBy, { ascending: sortOrder === 'asc' })
+      query = query.order(sortBy, { ascending: sortOrder === "asc" });
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
-      if (error) throw error
+      if (error) throw error;
 
-      setSavedCodes(data || [])
+      setSavedCodes(data || []);
     } catch (error) {
-      console.error("Error loading codes:", error)
-      alert("Failed to load codes. Please try again.")
+      console.error("Error loading codes:", error);
+      alert("Failed to load codes. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const deleteCode = async (codeId) => {
-    if (!user) return
+    if (!user) return;
 
     try {
       const { error } = await supabase
         .from(TABLES.USER_CODES)
         .delete()
-        .eq('id', codeId)
-        .eq('user_id', user.id)
+        .eq("id", codeId)
+        .eq("user_id", user.id);
 
-      if (error) throw error
+      if (error) throw error;
 
-      setSavedCodes((prev) => prev.filter((code) => code.id !== codeId))
+      setSavedCodes((prev) => prev.filter((code) => code.id !== codeId));
     } catch (error) {
-      console.error("Error deleting code:", error)
-      alert("Failed to delete code. Please try again.")
+      console.error("Error deleting code:", error);
+      alert("Failed to delete code. Please try again.");
     }
-  }
+  };
 
   useEffect(() => {
     if (user) {
-      loadCodes()
+      loadCodes();
     }
-  }, [user, searchTerm, sortBy, sortOrder, filterLanguage])
+  }, [user, searchTerm, sortBy, sortOrder, filterLanguage]);
 
   if (!user) {
     return (
-      <div className={`min-h-screen ${theme === "dark" ? "bg-slate-950" : "bg-white"}`}>
+      <div
+        className={`min-h-screen ${
+          theme === "dark" ? "bg-slate-950" : "bg-white"
+        }`}
+      >
         <div className="flex flex-col items-center justify-center h-screen">
           <div className="text-center">
-            <h1 className={`text-4xl font-bold mb-4 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+            <h1
+              className={`text-4xl font-bold mb-4 ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
               Code Treasure
             </h1>
-            <p className={`text-lg mb-8 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+            <p
+              className={`text-lg mb-8 ${
+                theme === "dark" ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
               Sign in to view your saved code treasures
             </p>
             <button
@@ -124,13 +140,21 @@ const CodeTreasure = ({ theme, onBack }) => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "bg-slate-950" : "bg-white"}`}>
+    <div
+      className={`min-h-screen ${
+        theme === "dark" ? "bg-slate-950" : "bg-white"
+      }`}
+    >
       {/* Header */}
-      <div className={`border-b ${theme === "dark" ? "border-slate-700/50" : "border-gray-200/50"}`}>
+      <div
+        className={`border-b ${
+          theme === "dark" ? "border-slate-700/50" : "border-gray-200/50"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -145,10 +169,18 @@ const CodeTreasure = ({ theme, onBack }) => {
                 <RiArrowLeftLine className="w-5 h-5" />
               </button>
               <div>
-                <h1 className={`text-4xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                <h1
+                  className={`text-4xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   Code Treasure
                 </h1>
-                <p className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                <p
+                  className={`text-lg ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   Discover your saved code gems
                 </p>
               </div>
@@ -161,9 +193,17 @@ const CodeTreasure = ({ theme, onBack }) => {
                     : "bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20"
                 }`}
               >
-                <RiSparklingLine className={`w-6 h-6 ${theme === "dark" ? "text-purple-400" : "text-purple-600"}`} />
+                <RiSparklingLine
+                  className={`w-6 h-6 ${
+                    theme === "dark" ? "text-purple-400" : "text-purple-600"
+                  }`}
+                />
               </div>
-              <div className={`text-right ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+              <div
+                className={`text-right ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
+              >
                 <div className="text-2xl font-bold">{savedCodes.length}</div>
                 <div className="text-sm opacity-70">Saved Codes</div>
               </div>
@@ -178,9 +218,11 @@ const CodeTreasure = ({ theme, onBack }) => {
           {/* Search Bar */}
           <div className="lg:col-span-2">
             <div className="relative">
-              <RiSearchLine className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                theme === "dark" ? "text-slate-400" : "text-gray-500"
-              }`} />
+              <RiSearchLine
+                className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                  theme === "dark" ? "text-slate-400" : "text-gray-500"
+                }`}
+              />
               <input
                 type="text"
                 value={searchTerm}
@@ -231,14 +273,14 @@ const CodeTreasure = ({ theme, onBack }) => {
               <option value="language">Language</option>
             </select>
             <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
               className={`px-4 py-4 rounded-xl border text-lg font-medium transition-all duration-300 ${
                 theme === "dark"
                   ? "bg-slate-700/50 border-slate-600/50 text-white hover:bg-slate-700/70"
                   : "bg-white/50 border-gray-300/50 text-gray-900 hover:bg-white/70"
               }`}
             >
-              {sortOrder === 'asc' ? '↑' : '↓'}
+              {sortOrder === "asc" ? "↑" : "↓"}
             </button>
           </div>
         </div>
@@ -247,7 +289,11 @@ const CodeTreasure = ({ theme, onBack }) => {
         {isLoading && (
           <div className="text-center py-16">
             <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+            <p
+              className={`text-lg ${
+                theme === "dark" ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
               Loading your code treasures...
             </p>
           </div>
@@ -265,12 +311,24 @@ const CodeTreasure = ({ theme, onBack }) => {
                       : "bg-gray-200/50 border border-gray-300/50"
                   }`}
                 >
-                  <RiCodeLine className={`w-12 h-12 ${theme === "dark" ? "text-slate-500" : "text-gray-400"}`} />
+                  <RiCodeLine
+                    className={`w-12 h-12 ${
+                      theme === "dark" ? "text-slate-500" : "text-gray-400"
+                    }`}
+                  />
                 </div>
-                <h3 className={`text-2xl font-bold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                <h3
+                  className={`text-2xl font-bold mb-2 ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   No code treasures yet
                 </h3>
-                <p className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                <p
+                  className={`text-lg ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   Start coding and save your first snippet to see it here
                 </p>
               </div>
@@ -288,10 +346,18 @@ const CodeTreasure = ({ theme, onBack }) => {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <h3 className={`text-xl font-bold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                        <h3
+                          className={`text-xl font-bold mb-2 ${
+                            theme === "dark" ? "text-white" : "text-gray-900"
+                          }`}
+                        >
                           {code.title}
                         </h3>
-                        <p className={`text-sm mb-3 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                        <p
+                          className={`text-sm mb-3 ${
+                            theme === "dark" ? "text-gray-300" : "text-gray-600"
+                          }`}
+                        >
                           {code.description}
                         </p>
                       </div>
@@ -307,10 +373,18 @@ const CodeTreasure = ({ theme, onBack }) => {
                     </div>
 
                     {/* Code Preview */}
-                    <div className={`p-4 rounded-xl mb-4 ${
-                      theme === "dark" ? "bg-slate-900/50 border border-slate-700/50" : "bg-gray-50/50 border border-gray-200/50"
-                    }`}>
-                      <pre className={`text-sm overflow-hidden ${theme === "dark" ? "text-slate-300" : "text-gray-700"}`}>
+                    <div
+                      className={`p-4 rounded-xl mb-4 ${
+                        theme === "dark"
+                          ? "bg-slate-900/50 border border-slate-700/50"
+                          : "bg-gray-50/50 border border-gray-200/50"
+                      }`}
+                    >
+                      <pre
+                        className={`text-sm overflow-hidden ${
+                          theme === "dark" ? "text-slate-300" : "text-gray-700"
+                        }`}
+                      >
                         {code.code.substring(0, 150)}
                         {code.code.length > 150 && "..."}
                       </pre>
@@ -318,11 +392,21 @@ const CodeTreasure = ({ theme, onBack }) => {
 
                     {/* Stats */}
                     <div className="flex items-center justify-between text-sm">
-                      <div className={`flex items-center space-x-1 ${theme === "dark" ? "text-slate-500" : "text-gray-500"}`}>
+                      <div
+                        className={`flex items-center space-x-1 ${
+                          theme === "dark" ? "text-slate-500" : "text-gray-500"
+                        }`}
+                      >
                         <RiTimeLine className="w-4 h-4" />
-                        <span>{new Date(code.updated_at).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(code.updated_at).toLocaleDateString()}
+                        </span>
                       </div>
-                      <div className={`text-sm ${theme === "dark" ? "text-slate-500" : "text-gray-500"}`}>
+                      <div
+                        className={`text-sm ${
+                          theme === "dark" ? "text-slate-500" : "text-gray-500"
+                        }`}
+                      >
                         {code.code.length} chars
                       </div>
                     </div>
@@ -331,9 +415,9 @@ const CodeTreasure = ({ theme, onBack }) => {
                     <div className="flex space-x-2 mt-4 pt-4 border-t border-slate-700/30">
                       <button
                         onClick={(e) => {
-                          e.stopPropagation()
+                          e.stopPropagation();
                           // Load code into editor
-                          window.location.href = '/?load=' + code.id
+                          window.location.href = "/?load=" + code.id;
                         }}
                         className={`flex-1 flex items-center justify-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                           theme === "dark"
@@ -346,8 +430,8 @@ const CodeTreasure = ({ theme, onBack }) => {
                       </button>
                       <button
                         onClick={(e) => {
-                          e.stopPropagation()
-                          deleteCode(code.id)
+                          e.stopPropagation();
+                          deleteCode(code.id);
                         }}
                         className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                           theme === "dark"
@@ -370,22 +454,34 @@ const CodeTreasure = ({ theme, onBack }) => {
       {selectedCode && (
         <div
           className={`fixed inset-0 z-50 flex items-center justify-center p-6 ${
-            theme === "dark" ? "bg-black/80 backdrop-blur-sm" : "bg-slate-900/50 backdrop-blur-sm"
+            theme === "dark"
+              ? "bg-black/80 backdrop-blur-sm"
+              : "bg-slate-900/50 backdrop-blur-sm"
           }`}
           onClick={() => setSelectedCode(null)}
         >
           <div
             className={`relative w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 rounded-2xl shadow-2xl backdrop-blur-xl border ${
-              theme === "dark" ? "bg-slate-800/95 border-slate-700/50" : "bg-white/95 border-gray-200/50"
+              theme === "dark"
+                ? "bg-slate-800/95 border-slate-700/50"
+                : "bg-white/95 border-gray-200/50"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className={`text-2xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                <h2
+                  className={`text-2xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   {selectedCode.title}
                 </h2>
-                <p className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                <p
+                  className={`text-sm ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   {selectedCode.description}
                 </p>
               </div>
@@ -412,21 +508,37 @@ const CodeTreasure = ({ theme, onBack }) => {
                 >
                   {selectedCode.language}
                 </span>
-                <div className={`flex items-center space-x-1 ${theme === "dark" ? "text-slate-500" : "text-gray-500"}`}>
+                <div
+                  className={`flex items-center space-x-1 ${
+                    theme === "dark" ? "text-slate-500" : "text-gray-500"
+                  }`}
+                >
                   <RiTimeLine className="w-4 h-4" />
-                  <span>{new Date(selectedCode.updated_at).toLocaleDateString()}</span>
+                  <span>
+                    {new Date(selectedCode.updated_at).toLocaleDateString()}
+                  </span>
                 </div>
-                <div className={`text-sm ${theme === "dark" ? "text-slate-500" : "text-gray-500"}`}>
+                <div
+                  className={`text-sm ${
+                    theme === "dark" ? "text-slate-500" : "text-gray-500"
+                  }`}
+                >
                   {selectedCode.code.length} characters
                 </div>
               </div>
 
               <div
                 className={`p-6 rounded-xl border ${
-                  theme === "dark" ? "bg-slate-900/50 border-slate-700/50" : "bg-gray-50/50 border-gray-200/50"
+                  theme === "dark"
+                    ? "bg-slate-900/50 border-slate-700/50"
+                    : "bg-gray-50/50 border-gray-200/50"
                 }`}
               >
-                <pre className={`text-sm overflow-x-auto ${theme === "dark" ? "text-slate-300" : "text-gray-700"}`}>
+                <pre
+                  className={`text-sm overflow-x-auto ${
+                    theme === "dark" ? "text-slate-300" : "text-gray-700"
+                  }`}
+                >
                   {selectedCode.code}
                 </pre>
               </div>
@@ -434,8 +546,8 @@ const CodeTreasure = ({ theme, onBack }) => {
               <div className="flex space-x-4 justify-end">
                 <button
                   onClick={() => {
-                    window.location.href = '/?load=' + selectedCode.id
-                    setSelectedCode(null)
+                    window.location.href = "/?load=" + selectedCode.id;
+                    setSelectedCode(null);
                   }}
                   className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
                     theme === "dark"
@@ -451,7 +563,7 @@ const CodeTreasure = ({ theme, onBack }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CodeTreasure 
+export default CodeTreasure;

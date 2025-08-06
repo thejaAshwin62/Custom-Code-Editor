@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import {
   RiSaveLine,
   RiFolderLine,
@@ -13,27 +14,34 @@ import {
   RiSearchLine,
   RiArrowLeftLine,
   RiAddLine,
-} from "react-icons/ri"
-import { useUser } from "@clerk/clerk-react"
-import { supabase, TABLES } from "../lib/supabase"
-import { toast } from "sonner"
+} from "react-icons/ri";
+import { useUser, SignInButton } from "@clerk/clerk-react";
+import { supabase, TABLES } from "../lib/supabase";
+import { toast } from "sonner";
 
-const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentLanguage = "javascript" }) => {
-  const { user } = useUser()
-  const [savedCodes, setSavedCodes] = useState([])
-  const [showSaveModal, setShowSaveModal] = useState(false)
-  const [codeTitle, setCodeTitle] = useState("")
-  const [codeDescription, setCodeDescription] = useState("")
-  const [editingCode, setEditingCode] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState("updated_at")
-  const [sortOrder, setSortOrder] = useState("desc")
+const CodeManagerPage = () => {
+  const {
+    theme,
+    onBack,
+    onLoadCode,
+    currentCode = "",
+    currentLanguage = "javascript",
+  } = useOutletContext();
+  const { user } = useUser();
+  const [savedCodes, setSavedCodes] = useState([]);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [codeTitle, setCodeTitle] = useState("");
+  const [codeDescription, setCodeDescription] = useState("");
+  const [editingCode, setEditingCode] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("updated_at");
+  const [sortOrder, setSortOrder] = useState("desc");
 
-    const saveCode = async () => {
-    if (!user) return
+  const saveCode = async () => {
+    if (!user) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from(TABLES.USER_CODES)
@@ -44,133 +52,123 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
           language: currentLanguage || "javascript",
           user_id: user.id, // Use Clerk user ID
         })
-        .select()
+        .select();
 
-      if (error) throw error
+      if (error) throw error;
 
-      setSavedCodes((prev) => [...prev, data[0]])
-      setShowSaveModal(false)
-      setCodeTitle("")
-      setCodeDescription("")
-      toast.success("Code saved successfully!")
+      setSavedCodes((prev) => [...prev, data[0]]);
+      setShowSaveModal(false);
+      setCodeTitle("");
+      setCodeDescription("");
+      toast.success("Code saved successfully!");
     } catch (error) {
-      console.error("Error saving code:", error)
-      toast.error("Failed to save code. Please try again.")
+      console.error("Error saving code:", error);
+      toast.error("Failed to save code. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const loadCodes = async () => {
-    if (!user) return
+    if (!user) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       let query = supabase
         .from(TABLES.USER_CODES)
-        .select('*')
-        .eq('user_id', user.id)
+        .select("*")
+        .eq("user_id", user.id);
 
       // Apply search filter
       if (searchTerm.trim()) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,code.ilike.%${searchTerm}%`)
+        query = query.or(
+          `title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,code.ilike.%${searchTerm}%`
+        );
       }
 
       // Apply sorting
-      query = query.order(sortBy, { ascending: sortOrder === 'asc' })
+      query = query.order(sortBy, { ascending: sortOrder === "asc" });
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
-      if (error) throw error
+      if (error) throw error;
 
-      setSavedCodes(data || [])
+      setSavedCodes(data || []);
     } catch (error) {
-      console.error("Error loading codes:", error)
-      toast.error("Failed to load codes. Please try again.")
+      console.error("Error loading codes:", error);
+      toast.error("Failed to load codes. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const deleteCode = async (codeId) => {
-    if (!user) return
+    if (!user) return;
 
     try {
       const { error } = await supabase
         .from(TABLES.USER_CODES)
         .delete()
-        .eq('id', codeId)
-        .eq('user_id', user.id)
+        .eq("id", codeId)
+        .eq("user_id", user.id);
 
-      if (error) throw error
+      if (error) throw error;
 
-      setSavedCodes((prev) => prev.filter((code) => code.id !== codeId))
-      toast.success("Code deleted successfully!")
+      setSavedCodes((prev) => prev.filter((code) => code.id !== codeId));
+      toast.success("Code deleted successfully!");
     } catch (error) {
-      console.error("Error deleting code:", error)
-      toast.error("Failed to delete code. Please try again.")
+      console.error("Error deleting code:", error);
+      toast.error("Failed to delete code. Please try again.");
     }
-  }
+  };
 
   const updateCode = async (codeId, updatedData) => {
-    if (!user) return
+    if (!user) return;
 
     try {
       const { data, error } = await supabase
         .from(TABLES.USER_CODES)
         .update({
           ...updatedData,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', codeId)
-        .eq('user_id', user.id)
-        .select()
+        .eq("id", codeId)
+        .eq("user_id", user.id)
+        .select();
 
-      if (error) throw error
+      if (error) throw error;
 
-      setSavedCodes((prev) => prev.map((code) => (code.id === codeId ? data[0] : code)))
-      setEditingCode(null)
-      toast.success("Code updated successfully!")
+      setSavedCodes((prev) =>
+        prev.map((code) => (code.id === codeId ? data[0] : code))
+      );
+      setEditingCode(null);
+      toast.success("Code updated successfully!");
     } catch (error) {
-      console.error("Error updating code:", error)
-      toast.error("Failed to update code. Please try again.")
+      console.error("Error updating code:", error);
+      toast.error("Failed to update code. Please try again.");
     }
-  }
+  };
 
   useEffect(() => {
     if (user) {
-      loadCodes()
+      loadCodes();
     }
-  }, [user, searchTerm, sortBy, sortOrder])
+  }, [user, searchTerm, sortBy, sortOrder]);
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div
-          className={`p-8 rounded-2xl border backdrop-blur-sm max-w-md w-full ${
-            theme === "dark" ? "bg-slate-800/50 border-slate-700/50" : "bg-gray-50/50 border-gray-200/50"
-          }`}
-        >
-          <div className="text-center">
-            <div
-              className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center ${
-                theme === "dark"
-                  ? "bg-slate-700/50 border border-slate-600/50"
-                  : "bg-gray-200/50 border border-gray-300/50"
-              }`}
-            >
-              <RiFolderLine className={`w-8 h-8 ${theme === "dark" ? "text-slate-400" : "text-gray-600"}`} />
-            </div>
-            <h3 className={`text-xl font-bold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-              Code Manager
-            </h3>
-            <p className={`text-sm ${theme === "dark" ? "text-slate-400" : "text-gray-600"}`}>
-              Sign in to save and manage your code snippets
-            </p>
-          </div>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] py-16">
+        <h2 className="text-2xl font-bold mb-4">Code Manager</h2>
+        <p className="mb-8 text-lg text-gray-500 dark:text-gray-400 text-center max-w-md">
+          Sign in to save and manage your code snippets.
+        </p>
+        <SignInButton mode="modal">
+          <button className="px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300">
+            Sign In
+          </button>
+        </SignInButton>
       </div>
-    )
+    );
   }
 
   return (
@@ -203,10 +201,18 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                   : "bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 shadow-lg shadow-emerald-500/10"
               }`}
             >
-              <RiFolderLine className={`w-8 h-8 ${theme === "dark" ? "text-emerald-400" : "text-emerald-600"}`} />
+              <RiFolderLine
+                className={`w-8 h-8 ${
+                  theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+                }`}
+              />
             </div>
             <div className="flex flex-col">
-              <h1 className={`text-3xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+              <h1
+                className={`text-3xl font-bold ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
+              >
                 Code Manager
               </h1>
               <div className="flex items-center space-x-3 mt-1">
@@ -248,9 +254,9 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
             {currentCode && currentCode.trim() && (
               <button
                 onClick={() => {
-                  setCodeTitle(`Code Snippet ${new Date().toLocaleString()}`)
-                  setCodeDescription("Code from editor")
-                  setShowSaveModal(true)
+                  setCodeTitle(`Code Snippet ${new Date().toLocaleString()}`);
+                  setCodeDescription("Code from editor");
+                  setShowSaveModal(true);
                 }}
                 className={`flex items-center space-x-3 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-lg ${
                   theme === "dark"
@@ -282,7 +288,9 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                   : "bg-gradient-to-r from-blue-500/10 to-indigo-500/10 text-blue-600 hover:from-blue-500/20 hover:to-indigo-500/20 border border-blue-500/20 shadow-blue-500/10"
               } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <RiRefreshLine className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`} />
+              <RiRefreshLine
+                className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
+              />
               <span>Refresh</span>
             </button>
           </div>
@@ -295,9 +303,11 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
         <div className="mb-8 space-y-4">
           {/* Search Bar */}
           <div className="relative max-w-2xl">
-            <RiSearchLine className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-              theme === "dark" ? "text-slate-400" : "text-gray-500"
-            }`} />
+            <RiSearchLine
+              className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                theme === "dark" ? "text-slate-400" : "text-gray-500"
+              }`}
+            />
             <input
               type="text"
               value={searchTerm}
@@ -314,7 +324,11 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
           {/* Sort Controls */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <span className={`text-sm font-medium ${theme === "dark" ? "text-slate-300" : "text-gray-700"}`}>
+              <span
+                className={`text-sm font-medium ${
+                  theme === "dark" ? "text-slate-300" : "text-gray-700"
+                }`}
+              >
                 Sort by:
               </span>
               <select
@@ -333,14 +347,14 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
               </select>
             </div>
             <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
               className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all duration-300 ${
                 theme === "dark"
                   ? "bg-slate-700/50 border-slate-600/50 text-white hover:bg-slate-700/70"
                   : "bg-white/50 border-gray-300/50 text-gray-900 hover:bg-white/70"
               }`}
             >
-              {sortOrder === 'asc' ? '↑' : '↓'}
+              {sortOrder === "asc" ? "↑" : "↓"}
             </button>
           </div>
         </div>
@@ -356,12 +370,24 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                     : "bg-gray-200/50 border border-gray-300/50"
                 }`}
               >
-                <RiCodeLine className={`w-12 h-12 ${theme === "dark" ? "text-slate-500" : "text-gray-400"}`} />
+                <RiCodeLine
+                  className={`w-12 h-12 ${
+                    theme === "dark" ? "text-slate-500" : "text-gray-400"
+                  }`}
+                />
               </div>
-              <h3 className={`text-xl font-semibold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+              <h3
+                className={`text-xl font-semibold mb-2 ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
+              >
                 No saved codes yet
               </h3>
-              <p className={`text-sm ${theme === "dark" ? "text-slate-400" : "text-gray-500"}`}>
+              <p
+                className={`text-sm ${
+                  theme === "dark" ? "text-slate-400" : "text-gray-500"
+                }`}
+              >
                 Save your first code snippet to get started
               </p>
               <button
@@ -389,7 +415,11 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
-                      <h4 className={`font-semibold text-lg ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                      <h4
+                        className={`font-semibold text-lg ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
                         {savedCode.title}
                       </h4>
                       <span
@@ -402,17 +432,29 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                         {savedCode.language}
                       </span>
                     </div>
-                    <p className={`text-sm mb-4 ${theme === "dark" ? "text-slate-400" : "text-gray-600"}`}>
+                    <p
+                      className={`text-sm mb-4 ${
+                        theme === "dark" ? "text-slate-400" : "text-gray-600"
+                      }`}
+                    >
                       {savedCode.description}
                     </p>
                     <div className="flex items-center space-x-4 text-xs mb-4">
                       <div
-                        className={`flex items-center space-x-1 ${theme === "dark" ? "text-slate-500" : "text-gray-500"}`}
+                        className={`flex items-center space-x-1 ${
+                          theme === "dark" ? "text-slate-500" : "text-gray-500"
+                        }`}
                       >
                         <RiTimeLine className="w-3 h-3" />
-                        <span>{new Date(savedCode.updated_at).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(savedCode.updated_at).toLocaleDateString()}
+                        </span>
                       </div>
-                      <div className={`text-xs ${theme === "dark" ? "text-slate-500" : "text-gray-500"}`}>
+                      <div
+                        className={`text-xs ${
+                          theme === "dark" ? "text-slate-500" : "text-gray-500"
+                        }`}
+                      >
                         {savedCode.code.length} characters
                       </div>
                     </div>
@@ -420,10 +462,18 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                 </div>
 
                 {/* Code Preview */}
-                <div className={`mb-4 p-3 rounded-lg ${
-                  theme === "dark" ? "bg-slate-900/30 border border-slate-700/30" : "bg-gray-100/50 border border-gray-200/30"
-                }`}>
-                  <pre className={`text-xs overflow-hidden ${theme === "dark" ? "text-slate-300" : "text-gray-700"}`}>
+                <div
+                  className={`mb-4 p-3 rounded-lg ${
+                    theme === "dark"
+                      ? "bg-slate-900/30 border border-slate-700/30"
+                      : "bg-gray-100/50 border border-gray-200/30"
+                  }`}
+                >
+                  <pre
+                    className={`text-xs overflow-hidden ${
+                      theme === "dark" ? "text-slate-300" : "text-gray-700"
+                    }`}
+                  >
                     {savedCode.code.substring(0, 150)}
                     {savedCode.code.length > 150 && "..."}
                   </pre>
@@ -478,12 +528,16 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
       {showSaveModal && (
         <div
           className={`fixed inset-0 z-50 flex items-center justify-center p-6 ${
-            theme === "dark" ? "bg-black/80 backdrop-blur-sm" : "bg-slate-900/50 backdrop-blur-sm"
+            theme === "dark"
+              ? "bg-black/80 backdrop-blur-sm"
+              : "bg-slate-900/50 backdrop-blur-sm"
           }`}
         >
           <div
             className={`relative w-full max-w-lg p-8 rounded-2xl shadow-2xl backdrop-blur-xl border ${
-              theme === "dark" ? "bg-slate-800/95 border-slate-700/50" : "bg-white/95 border-gray-200/50"
+              theme === "dark"
+                ? "bg-slate-800/95 border-slate-700/50"
+                : "bg-white/95 border-gray-200/50"
             }`}
           >
             <div className="flex items-center space-x-4 mb-6">
@@ -494,13 +548,25 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                     : "bg-gradient-to-br from-emerald-500/10 to-green-500/10 border border-emerald-500/20"
                 }`}
               >
-                <RiSaveLine className={`w-6 h-6 ${theme === "dark" ? "text-emerald-400" : "text-emerald-600"}`} />
+                <RiSaveLine
+                  className={`w-6 h-6 ${
+                    theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+                  }`}
+                />
               </div>
               <div>
-                <h3 className={`text-xl font-bold ${theme === "dark" ? "text-white" : "text-slate-800"}`}>
+                <h3
+                  className={`text-xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-slate-800"
+                  }`}
+                >
                   Save Code Snippet
                 </h3>
-                <p className={`text-sm ${theme === "dark" ? "text-slate-400" : "text-gray-600"}`}>
+                <p
+                  className={`text-sm ${
+                    theme === "dark" ? "text-slate-400" : "text-gray-600"
+                  }`}
+                >
                   Give your code a title and description
                 </p>
               </div>
@@ -509,7 +575,9 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
             <div className="space-y-6">
               <div>
                 <label
-                  className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-slate-300" : "text-slate-700"}`}
+                  className={`block text-sm font-medium mb-2 ${
+                    theme === "dark" ? "text-slate-300" : "text-slate-700"
+                  }`}
                 >
                   Title *
                 </label>
@@ -528,7 +596,9 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
 
               <div>
                 <label
-                  className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-slate-300" : "text-slate-700"}`}
+                  className={`block text-sm font-medium mb-2 ${
+                    theme === "dark" ? "text-slate-300" : "text-slate-700"
+                  }`}
                 >
                   Description
                 </label>
@@ -566,8 +636,8 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                       ? "bg-emerald-800/50 text-emerald-300/50 cursor-not-allowed border border-emerald-700/50"
                       : "bg-emerald-300/50 text-emerald-700/50 cursor-not-allowed border border-emerald-400/50"
                     : theme === "dark"
-                      ? "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-emerald-500/25"
-                      : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-emerald-500/25"
+                    ? "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-emerald-500/25"
+                    : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-emerald-500/25"
                 }`}
               >
                 {isLoading ? (
@@ -588,12 +658,16 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
       {editingCode && (
         <div
           className={`fixed inset-0 z-50 flex items-center justify-center p-6 ${
-            theme === "dark" ? "bg-black/80 backdrop-blur-sm" : "bg-slate-900/50 backdrop-blur-sm"
+            theme === "dark"
+              ? "bg-black/80 backdrop-blur-sm"
+              : "bg-slate-900/50 backdrop-blur-sm"
           }`}
         >
           <div
             className={`relative w-full max-w-lg p-8 rounded-2xl shadow-2xl backdrop-blur-xl border ${
-              theme === "dark" ? "bg-slate-800/95 border-slate-700/50" : "bg-white/95 border-gray-200/50"
+              theme === "dark"
+                ? "bg-slate-800/95 border-slate-700/50"
+                : "bg-white/95 border-gray-200/50"
             }`}
           >
             <div className="flex items-center space-x-4 mb-6">
@@ -604,13 +678,25 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                     : "bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/20"
                 }`}
               >
-                <RiEditLine className={`w-6 h-6 ${theme === "dark" ? "text-blue-400" : "text-blue-600"}`} />
+                <RiEditLine
+                  className={`w-6 h-6 ${
+                    theme === "dark" ? "text-blue-400" : "text-blue-600"
+                  }`}
+                />
               </div>
               <div>
-                <h3 className={`text-xl font-bold ${theme === "dark" ? "text-white" : "text-slate-800"}`}>
+                <h3
+                  className={`text-xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-slate-800"
+                  }`}
+                >
                   Edit Code Snippet
                 </h3>
-                <p className={`text-sm ${theme === "dark" ? "text-slate-400" : "text-gray-600"}`}>
+                <p
+                  className={`text-sm ${
+                    theme === "dark" ? "text-slate-400" : "text-gray-600"
+                  }`}
+                >
                   Update the title and description
                 </p>
               </div>
@@ -619,14 +705,18 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
             <div className="space-y-6">
               <div>
                 <label
-                  className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-slate-300" : "text-slate-700"}`}
+                  className={`block text-sm font-medium mb-2 ${
+                    theme === "dark" ? "text-slate-300" : "text-slate-700"
+                  }`}
                 >
                   Title *
                 </label>
                 <input
                   type="text"
                   value={editingCode.title}
-                  onChange={(e) => setEditingCode({ ...editingCode, title: e.target.value })}
+                  onChange={(e) =>
+                    setEditingCode({ ...editingCode, title: e.target.value })
+                  }
                   className={`w-full p-4 rounded-xl border text-sm shadow-lg ${
                     theme === "dark"
                       ? "bg-slate-700/50 border-slate-600/50 text-white placeholder-slate-400 focus:bg-slate-700/70 focus:border-blue-500/50"
@@ -637,13 +727,20 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
 
               <div>
                 <label
-                  className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-slate-300" : "text-slate-700"}`}
+                  className={`block text-sm font-medium mb-2 ${
+                    theme === "dark" ? "text-slate-300" : "text-slate-700"
+                  }`}
                 >
                   Description
                 </label>
                 <textarea
                   value={editingCode.description}
-                  onChange={(e) => setEditingCode({ ...editingCode, description: e.target.value })}
+                  onChange={(e) =>
+                    setEditingCode({
+                      ...editingCode,
+                      description: e.target.value,
+                    })
+                  }
                   className={`w-full p-4 rounded-xl border text-sm resize-none shadow-lg ${
                     theme === "dark"
                       ? "bg-slate-700/50 border-slate-600/50 text-white placeholder-slate-400 focus:bg-slate-700/70 focus:border-blue-500/50"
@@ -679,8 +776,8 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
                       ? "bg-blue-800/50 text-blue-300/50 cursor-not-allowed border border-blue-700/50"
                       : "bg-blue-300/50 text-blue-700/50 cursor-not-allowed border border-blue-400/50"
                     : theme === "dark"
-                      ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-blue-500/25"
-                      : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-blue-500/25"
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-blue-500/25"
+                    : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-blue-500/25"
                 }`}
               >
                 Update
@@ -690,7 +787,7 @@ const CodeManagerPage = ({ theme, onBack, onLoadCode, currentCode = "", currentL
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CodeManagerPage 
+export default CodeManagerPage;
