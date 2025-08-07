@@ -38,6 +38,7 @@ console.log(fibonacci(10));`
 
   // UI state
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [outputSidebarOpen, setOutputSidebarOpen] = useState(false);
 
   // Chat state
   const [chatMessages, setChatMessages] = useState([]);
@@ -77,6 +78,11 @@ console.log(fibonacci(10));`
   // Sidebar toggle
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  // Output sidebar toggle
+  const toggleOutputSidebar = () => {
+    setOutputSidebarOpen(!outputSidebarOpen);
   };
 
   // AI Assistant toggle
@@ -350,6 +356,7 @@ console.log(fibonacci(10));`
     suggestions,
     activePanel,
     sidebarOpen,
+    outputSidebarOpen,
     chatMessages,
     chatInput,
     isTyping,
@@ -367,6 +374,7 @@ console.log(fibonacci(10));`
     // Actions
     toggleTheme,
     toggleSidebar,
+    toggleOutputSidebar,
     toggleAiAssistant,
     animateTypingCode,
     handleExplainCode,

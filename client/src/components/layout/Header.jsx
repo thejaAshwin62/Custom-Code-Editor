@@ -13,6 +13,7 @@ const Header = ({
   user,
   aiAssistantEnabled,
   sidebarOpen,
+  outputSidebarOpen,
   toggleTheme,
   toggleAiAssistant,
   toggleSidebar,
@@ -22,14 +23,23 @@ const Header = ({
   return (
     <header
       className={`border-b backdrop-blur-xl flex-shrink-0 transition-all duration-700 ease-in-out ${
-        sidebarOpen ? "mr-96" : "mr-20"
+        sidebarOpen && outputSidebarOpen
+          ? "mr-96" // Fallback class for both sidebars (will be overridden by inline style)
+          : sidebarOpen || outputSidebarOpen
+          ? "mr-96" // One sidebar open: 384px
+          : "mr-20" // No sidebars open: 80px
       } ${
         theme === "dark"
           ? "bg-slate-900/95 border-slate-700/50 shadow-2xl shadow-slate-900/50"
           : "bg-white/95 border-gray-200/50 shadow-2xl shadow-gray-900/10"
       }`}
       style={{
-        marginRight: sidebarOpen ? "384px" : "80px", // Backup inline style to match sidebar width
+        marginRight:
+          sidebarOpen && outputSidebarOpen
+            ? "768px" // Both sidebars open: 384px + 384px
+            : sidebarOpen || outputSidebarOpen
+            ? "384px" // One sidebar open: 384px
+            : "80px", // No sidebars open: 80px (QuickActionsPanel)
         transition: "margin-right 0.7s ease-in-out",
       }}
     >
@@ -100,7 +110,7 @@ const Header = ({
                     : "bg-gray-200/50 text-gray-600"
                 }`}
               >
-                <span>Sidebar: {sidebarOpen ? "Open" : "Closed"}</span>
+                <span>AI Sidebar: {sidebarOpen ? "Open" : "Closed"} | Output Sidebar: {outputSidebarOpen ? "Open" : "Closed"}</span>
               </div> */}
             </div>
           </div>

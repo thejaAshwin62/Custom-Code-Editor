@@ -17,6 +17,7 @@ import { IoLogoHtml5 } from "react-icons/io5";
 import { IoLogoCss3 } from "react-icons/io";
 import axios from "axios";
 import { useUser, SignInButton } from "@clerk/clerk-react";
+import { toast } from "sonner";
 
 const CodeEditor = () => {
   const { isLoaded, user } = useUser();
@@ -30,6 +31,7 @@ const CodeEditor = () => {
     handleAutocomplete: onAutocomplete,
     aiAssistantEnabled = true,
     sidebarOpen,
+    outputSidebarOpen,
     handleQuickSave,
     user: outletUser,
   } = useOutletContext();
@@ -76,6 +78,154 @@ const CodeEditor = () => {
     { id: "html", name: "HTML", icon: IoLogoHtml5, color: "#E34F26" },
     { id: "css", name: "CSS", icon: IoLogoCss3, color: "#1572B6" },
   ];
+
+  // Boilerplate code templates for different languages
+  const getBoilerplateCode = (languageId) => {
+    const boilerplates = {
+      javascript: `// Welcome to JavaScript!
+// This is a sample JavaScript code
+
+function greetUser(name) {
+  return \`Hello, \${name}! Welcome to JavaScript programming.\`;
+}
+
+// Example usage
+const userName = "Developer";
+const greeting = greetUser(userName);
+console.log(greeting);
+
+// You can start coding here...`,
+
+      python: `# Welcome to Python!
+# This is a sample Python code
+
+def greet_user(name):
+    """
+    Function to greet a user
+    """
+    return f"Hello, {name}! Welcome to Python programming."
+
+# Example usage
+def main():
+    user_name = "Developer"
+    greeting = greet_user(user_name)
+    print(greeting)
+    
+    # You can start coding here...
+
+if __name__ == "__main__":
+    main()`,
+
+      java: `// Welcome to Java!
+// This is a sample Java code
+
+public class HelloWorld {
+    
+    public static void main(String[] args) {
+        System.out.println("Hello, Developer! Welcome to Java programming.");
+        
+        // Create an instance and call methods
+        HelloWorld app = new HelloWorld();
+        String greeting = app.greetUser("Developer");
+        System.out.println(greeting);
+        
+        // You can start coding here...
+    }
+    
+    public String greetUser(String name) {
+        return "Hello, " + name + "! Welcome to Java programming.";
+    }
+}`,
+
+      html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to HTML</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .welcome {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome">
+        <h1>Welcome to HTML!</h1>
+        <p>This is a sample HTML document. Start building your web page here.</p>
+    </div>
+    
+    <h2>Getting Started</h2>
+    <p>You can start coding your HTML here...</p>
+    
+    <script>
+        console.log("Hello from HTML! Ready to code.");
+    </script>
+</body>
+</html>`,
+
+      css: `/* Welcome to CSS! */
+/* This is a sample CSS stylesheet */
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-container {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 500px;
+}
+
+.welcome-title {
+    color: #667eea;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.welcome-text {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* You can start styling here... */`,
+    };
+
+    return (
+      boilerplates[languageId] ||
+      `// Welcome to ${languageId}!\n// Start coding here...`
+    );
+  };
 
   // Enhanced inline completion function
   const getInlineCompletion = async (model, position) => {
@@ -257,6 +407,48 @@ const CodeEditor = () => {
     localStorage.setItem("code", value || "");
   };
 
+  // Handle language change with boilerplate code generation
+  const handleLanguageChange = (newLanguage) => {
+    // Check if current code is empty or just whitespace
+    const currentCode = code.trim();
+
+    if (!currentCode) {
+      // If editor is empty, automatically load boilerplate
+      const boilerplate = getBoilerplateCode(newLanguage);
+      setCode(boilerplate);
+      localStorage.setItem("code", boilerplate);
+    } else {
+      // If there's existing code, show toast with action buttons
+      const languageName = languages.find(
+        (lang) => lang.id === newLanguage
+      )?.name;
+
+      toast(`Replace with ${languageName} boilerplate?`, {
+        description: "You have existing code. Choose what to do:",
+        duration: 10000, // Give user time to decide
+        position: "top-center",
+        action: {
+          label: "Replace Code",
+          onClick: () => {
+            const boilerplate = getBoilerplateCode(newLanguage);
+            setCode(boilerplate);
+            localStorage.setItem("code", boilerplate);
+            toast.success(`Switched to ${languageName} with boilerplate code!`);
+          },
+        },
+        cancel: {
+          label: "Keep Code",
+          onClick: () => {
+            toast.info(`Language changed to ${languageName}, code preserved`);
+          },
+        },
+      });
+    }
+
+    // Always update the language
+    setLanguage(newLanguage);
+  };
+
   const handleCodeModification = async () => {
     if (!aiAssistantEnabled || !promptInput.trim() || !editorRef.current)
       return;
@@ -273,9 +465,14 @@ const CodeEditor = () => {
 
       if (response.data && response.data.modifiedCode) {
         if (response.data.unchanged) {
-          alert(
+          toast.info(
             response.data.message ||
-              "No changes were made to the code. Try being more specific."
+              "No changes were made to the code. Try being more specific.",
+            {
+              duration: 4000,
+              description:
+                "The AI didn't find any modifications to make based on your request.",
+            }
           );
         } else {
           const newCode = response.data.modifiedCode;
@@ -311,6 +508,12 @@ const CodeEditor = () => {
           }
 
           setCode(newCode);
+
+          // Show success toast
+          toast.success("Code Modified Successfully!", {
+            description: "Your code has been updated with AI modifications.",
+            duration: 3000,
+          });
         }
       }
     } catch (error) {
@@ -325,7 +528,10 @@ const CodeEditor = () => {
         errorMessage = error.response.data.message;
       }
 
-      alert(errorMessage);
+      toast.error("Code Modification Failed", {
+        description: errorMessage,
+        duration: 5000,
+      });
     } finally {
       setIsModifying(false);
       setShowPromptModal(false);
@@ -343,6 +549,16 @@ const CodeEditor = () => {
       return () => cleanup();
     }
   }, [language, inlineCompletionsEnabled, aiAssistantEnabled]);
+
+  // Load default JavaScript boilerplate on component mount
+  useEffect(() => {
+    // Check if code is empty and load default JavaScript boilerplate
+    if (!code || code.trim() === "") {
+      const defaultBoilerplate = getBoilerplateCode("javascript");
+      setCode(defaultBoilerplate);
+      localStorage.setItem("code", defaultBoilerplate);
+    }
+  }, []); // Run only once on mount
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -370,13 +586,22 @@ const CodeEditor = () => {
 
   return (
     <div
-      key={`editor-${sidebarOpen}`} // Force re-render when sidebar state changes
-      className={`h-full flex flex-col transition-all duration-300 ease-in-out ${
-        sidebarOpen ? "pr-96" : "pr-20"
+      key={`editor-${sidebarOpen}-${outputSidebarOpen}`} // Force re-render when sidebar states change
+      className={`h-full flex flex-col transition-all duration-1000 ease-in-out ${
+        sidebarOpen && outputSidebarOpen
+          ? "pr-96" // Fallback class for both sidebars (will be overridden by inline style)
+          : sidebarOpen || outputSidebarOpen
+          ? "pr-96" // One sidebar open: 384px
+          : "pr-20" // No sidebars open: 80px
       }`}
       style={{
-        paddingRight: sidebarOpen ? "384px" : "80px", // Backup inline style
-        transition: "padding-right 0.3s ease-in-out",
+        paddingRight:
+          sidebarOpen && outputSidebarOpen
+            ? "768px" // Both sidebars open: 384px + 384px
+            : sidebarOpen || outputSidebarOpen
+            ? "384px" // One sidebar open: 384px
+            : "80px", // No sidebars open: 80px
+        transition: "padding-right 1s ease-in-out",
       }}
     >
       {/* Enhanced Editor Toolbar */}
@@ -429,7 +654,7 @@ const CodeEditor = () => {
                   <button
                     key={lang.id}
                     onClick={() => {
-                      setLanguage(lang.id);
+                      handleLanguageChange(lang.id);
                       setIsLanguageOpen(false);
                     }}
                     className={`w-full text-left flex items-center space-x-3 px-6 py-3 hover:bg-opacity-10 transition-all duration-300 text-sm rounded-lg mx-1 my-1 ${
@@ -464,7 +689,7 @@ const CodeEditor = () => {
                 : "bg-gray-200 text-gray-700"
             }`}
           >
-            Sidebar: {sidebarOpen ? "Open" : "Closed"}
+            AI Sidebar: {sidebarOpen ? "Open" : "Closed"} | Output Sidebar: {outputSidebarOpen ? "Open" : "Closed"}
           </div> */}
 
           {/* Font Size Controls */}

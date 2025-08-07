@@ -5,6 +5,7 @@ import { useAppState } from "./hooks";
 import {
   Header,
   AISidebar,
+  OutputSidebar,
   QuickActionsPanel,
   AnimatedBackground,
 } from "./components/layout";
@@ -20,6 +21,7 @@ function App() {
     code,
     language,
     sidebarOpen,
+    outputSidebarOpen,
     chatMessages,
     chatInput,
     isTyping,
@@ -34,6 +36,7 @@ function App() {
     // Actions
     toggleTheme,
     toggleSidebar,
+    toggleOutputSidebar,
     toggleAiAssistant,
     handleExplainCode,
     handleAutocomplete,
@@ -72,9 +75,11 @@ function App() {
             user={user}
             aiAssistantEnabled={aiAssistantEnabled}
             sidebarOpen={sidebarOpen}
+            outputSidebarOpen={outputSidebarOpen}
             toggleTheme={toggleTheme}
             toggleAiAssistant={toggleAiAssistant}
             toggleSidebar={toggleSidebar}
+            toggleOutputSidebar={toggleOutputSidebar}
             handleGoHome={handleGoHome}
             handleShowCodeManager={handleShowCodeManager}
           />
@@ -99,6 +104,7 @@ function App() {
                 theme,
                 toggleTheme,
                 sidebarOpen,
+                outputSidebarOpen,
                 code,
                 setCode,
                 language,
@@ -140,14 +146,28 @@ function App() {
             />
           )}
 
+          {/* Output Sidebar - Only show for editor route */}
+          {isEditorRoute && (
+            <OutputSidebar
+              theme={theme}
+              outputSidebarOpen={outputSidebarOpen}
+              toggleOutputSidebar={toggleOutputSidebar}
+              code={code}
+              language={language}
+              aiAssistantEnabled={aiAssistantEnabled}
+            />
+          )}
+
           {/* Quick Actions Panel - Only show for editor route */}
           {isEditorRoute && (
             <QuickActionsPanel
               theme={theme}
               sidebarOpen={sidebarOpen}
+              outputSidebarOpen={outputSidebarOpen}
               user={user}
               aiAssistantEnabled={aiAssistantEnabled}
               toggleSidebar={toggleSidebar}
+              toggleOutputSidebar={toggleOutputSidebar}
               handleShowCodeManager={handleShowCodeManager}
               handleExplainCode={handleExplainCode}
               handleAutocomplete={handleAutocomplete}
