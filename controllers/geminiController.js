@@ -48,8 +48,16 @@ export const inlineCompletionController = async (req, res) => {
       return res.status(400).json({ error: "Code is required" });
     }
 
+    console.log("Inline completion request:", {
+      language,
+      position,
+      codeLength: code.length,
+    });
+
     // Get inline completion from Gemini AI
     const completion = await getInlineCompletion(code, position, language);
+
+    console.log("Inline completion result:", completion);
 
     res.json({
       completion: completion,

@@ -9,6 +9,8 @@ import {
   RiZoomInLine,
   RiZoomOutLine,
   RiSaveLine,
+  RiToggleLine,
+  RiToggleFill,
 } from "react-icons/ri";
 import { IoLogoJavascript } from "react-icons/io5";
 import { FaPython } from "react-icons/fa";
@@ -38,7 +40,7 @@ const CodeEditor = () => {
 
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [inlineCompletionsEnabled, setInlineCompletionsEnabled] =
-    useState(true);
+    useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentSuggestion, setCurrentSuggestion] = useState(null);
   const [showPromptModal, setShowPromptModal] = useState(false);
@@ -449,6 +451,24 @@ body {
     setLanguage(newLanguage);
   };
 
+  // Handle inline completion toggle with notification
+  const handleInlineCompletionToggle = () => {
+    const newState = !inlineCompletionsEnabled;
+    setInlineCompletionsEnabled(newState);
+
+    if (newState) {
+      toast.success("✨ AI Inline Completions Enabled", {
+        description: "Start typing to see AI suggestions",
+        duration: 3000,
+      });
+    } else {
+      toast.info("🔇 AI Inline Completions Disabled", {
+        description: "You can re-enable them anytime",
+        duration: 3000,
+      });
+    }
+  };
+
   const handleCodeModification = async () => {
     if (!aiAssistantEnabled || !promptInput.trim() || !editorRef.current)
       return;
@@ -725,6 +745,32 @@ body {
             </button>
           </div>
 
+          {/* Inline Completion Toggle */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleInlineCompletionToggle}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-300 ${
+                inlineCompletionsEnabled
+                  ? theme === "dark"
+                    ? "bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30"
+                    : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 border border-emerald-500/20"
+                  : theme === "dark"
+                  ? "bg-slate-700/50 hover:bg-slate-700/70 text-gray-400 border border-slate-600/50"
+                  : "bg-gray-200/50 hover:bg-gray-200/70 text-gray-500 border border-gray-300/50"
+              }`}
+              title={`${
+                inlineCompletionsEnabled ? "Disable" : "Enable"
+              } Inline Completions`}
+            >
+              {inlineCompletionsEnabled ? (
+                <RiToggleFill className="w-4 h-4" />
+              ) : (
+                <RiToggleLine className="w-4 h-4" />
+              )}
+              <span className="text-sm font-medium">AI Completion</span>
+            </button>
+          </div>
+
           {/* AI Modify Button */}
           {/* <button
             onClick={() => setShowPromptModal(true)}
@@ -766,42 +812,117 @@ body {
               </button>
               {/* Save Modal */}
               {showSaveModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div
+                  className={`fixed inset-0 z-50 flex items-center justify-center ${
+                    theme === "dark"
+                      ? "bg-black/60 backdrop-blur-sm"
+                      : "bg-slate-900/40 backdrop-blur-sm"
+                  }`}
+                >
                   <div
-                    className={`bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-200 dark:border-slate-700`}
+                    className={`rounded-2xl shadow-2xl p-8 w-full max-w-md border backdrop-blur-xl ${
+                      theme === "dark"
+                        ? "bg-slate-800/95 border-slate-700/50"
+                        : "bg-white/95 border-gray-200/50"
+                    }`}
                   >
-                    <h2 className="text-xl font-bold mb-4 text-center">
+                    <h2
+                      className={`text-xl font-bold mb-2 text-center ${
+                        theme === "dark" ? "text-white" : "text-slate-800"
+                      }`}
+                    >
                       Save Code Snippet
                     </h2>
+                    <div
+                      className={`text-center mb-4 ${
+                        theme === "dark" ? "text-slate-400" : "text-gray-600"
+                      }`}
+                    >
+                      <span className="text-sm">Saving as </span>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
+                          theme === "dark"
+                            ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                            : "bg-blue-500/10 text-blue-600 border border-blue-500/20"
+                        }`}
+                      >
+                        {languages.find((l) => l.id === language)?.name ||
+                          language.toUpperCase()}
+                      </span>
+                    </div>
                     <div className="mb-4">
-                      <label className="block text-sm font-medium mb-1">
-                        File Name
+                      <label
+                        className={`block text-sm font-medium mb-1 ${
+                          theme === "dark" ? "text-slate-300" : "text-gray-700"
+                        }`}
+                      >
+                        File Name*
                       </label>
                       <input
                         type="text"
                         value={saveTitle}
                         onChange={(e) => setSaveTitle(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-emerald-500/50 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
-                        placeholder="Enter file name"
+                        className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all duration-300 ${
+                          theme === "dark"
+                            ? "bg-slate-700/50 border-slate-600/50 text-white placeholder-slate-400 focus:bg-slate-700/70 focus:border-emerald-500/50"
+                            : "bg-white/50 border-gray-300/50 text-slate-800 placeholder-slate-500 focus:bg-white/70 focus:border-emerald-500/50"
+                        }`}
+                        placeholder="e.g., my-awesome-script, calculator-app"
                         autoFocus
+                        maxLength={100}
                       />
+                      {saveTitle.length > 0 && (
+                        <div
+                          className={`text-xs mt-1 ${
+                            theme === "dark"
+                              ? "text-slate-400"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {saveTitle.length}/100 characters
+                        </div>
+                      )}
                     </div>
                     <div className="mb-6">
-                      <label className="block text-sm font-medium mb-1">
+                      <label
+                        className={`block text-sm font-medium mb-1 ${
+                          theme === "dark" ? "text-slate-300" : "text-gray-700"
+                        }`}
+                      >
                         Description
                       </label>
                       <textarea
                         value={saveDescription}
                         onChange={(e) => setSaveDescription(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-emerald-500/50 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
-                        placeholder="Enter description (optional)"
+                        className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-none transition-all duration-300 ${
+                          theme === "dark"
+                            ? "bg-slate-700/50 border-slate-600/50 text-white placeholder-slate-400 focus:bg-slate-700/70 focus:border-emerald-500/50"
+                            : "bg-white/50 border-gray-300/50 text-slate-800 placeholder-slate-500 focus:bg-white/70 focus:border-emerald-500/50"
+                        }`}
+                        placeholder="Brief description of what this code does (optional)"
                         rows={3}
+                        maxLength={500}
                       />
+                      {saveDescription.length > 0 && (
+                        <div
+                          className={`text-xs mt-1 ${
+                            theme === "dark"
+                              ? "text-slate-400"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {saveDescription.length}/500 characters
+                        </div>
+                      )}
                     </div>
                     <div className="flex justify-end space-x-3">
                       <button
                         onClick={() => setShowSaveModal(false)}
-                        className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-slate-600 transition"
+                        className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                          theme === "dark"
+                            ? "bg-slate-700/50 text-slate-300 hover:bg-slate-700/70 border border-slate-600/50"
+                            : "bg-gray-200/50 text-gray-700 hover:bg-gray-200/70 border border-gray-300/50"
+                        }`}
                         disabled={saving}
                       >
                         Cancel
@@ -809,9 +930,24 @@ body {
                       <button
                         onClick={handleSave}
                         disabled={!saveTitle.trim() || saving}
-                        className="px-6 py-2 rounded-lg bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition"
+                        className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                          !saveTitle.trim() || saving
+                            ? theme === "dark"
+                              ? "bg-emerald-800/50 text-emerald-300/50 cursor-not-allowed border border-emerald-700/50"
+                              : "bg-emerald-300/50 text-emerald-700/50 cursor-not-allowed border border-emerald-400/50"
+                            : theme === "dark"
+                            ? "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-emerald-500/25"
+                            : "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-emerald-500/25"
+                        }`}
                       >
-                        {saving ? "Saving..." : "Save"}
+                        {saving ? (
+                          <span className="flex items-center space-x-2">
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            <span>Saving...</span>
+                          </span>
+                        ) : (
+                          "Save"
+                        )}
                       </button>
                     </div>
                   </div>
@@ -855,13 +991,13 @@ body {
                   : "bg-gray-400"
               }`}
             />
-            <span>
+            {/* <span>
               {isGenerating
                 ? "Generating..."
                 : inlineCompletionsEnabled && aiAssistantEnabled
                 ? "AI Copilot Active"
                 : "AI Copilot Off"}
-            </span>
+            </span> */}
           </div>
         </div>
       </div>

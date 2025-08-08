@@ -175,12 +175,14 @@ CRITICAL RULES:
 - Match the existing code style and indentation
 - If the code looks complete, suggest the next logical function/feature
 - Language: ${language}
+- Consider the cursor position and context carefully
+- Provide completions that make sense in the current context
 
 Example:
 Input: "function fibonacci(n) {\\n  if (n <= 1) return n;\\n  "
 Output: "return fibonacci(n - 1) + fibonacci(n - 2);"
 
-Complete this ${language} code:
+Complete this ${language} code at the cursor position:
 
 ${code}`;
 
@@ -189,11 +191,19 @@ ${code}`;
 
     const completion = response.text().trim();
 
-    // Clean any remaining formatting
-    return completion
+    // Clean any remaining formatting and ensure it's just code
+    const cleanCompletion = completion
       .replace(/^```[^\n]*\n|```$/g, "")
       .replace(/^\s*\/\/.*$/gm, "") // Remove comment lines
+      .replace(/^[A-Za-z\s]*:/, "") // Remove any label prefixes
       .trim();
+
+    // Only return if we have meaningful completion
+    if (cleanCompletion && cleanCompletion.length > 0) {
+      return cleanCompletion;
+    }
+    
+    return null;
   } catch (error) {
     console.error("Gemini Inline Completion Error:", error);
     throw new Error("Failed to get inline completion from Gemini");

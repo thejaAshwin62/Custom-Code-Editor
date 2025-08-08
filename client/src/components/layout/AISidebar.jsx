@@ -3,8 +3,9 @@ import {
   RiRobotLine,
   RiUserLine,
   RiSendPlaneLine,
-} from "react-icons/ri"
-import { UserButton } from "@clerk/clerk-react"
+  RiSettingsLine,
+} from "react-icons/ri";
+import { UserButton } from "@clerk/clerk-react";
 
 const AISidebar = ({
   theme,
@@ -17,6 +18,7 @@ const AISidebar = ({
   toggleSidebar,
   setChatInput,
   handleChatSubmit,
+  handleShowSettings,
 }) => {
   return (
     <div
@@ -42,19 +44,33 @@ const AISidebar = ({
                   : "bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 shadow-lg shadow-emerald-500/10"
               }`}
             >
-              <RiRobotLine className={`w-6 h-6 ${theme === "dark" ? "text-emerald-400" : "text-emerald-600"}`} />
+              <RiRobotLine
+                className={`w-6 h-6 ${
+                  theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+                }`}
+              />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className={`text-xl font-bold truncate ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+              <h2
+                className={`text-xl font-bold truncate ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
+              >
                 AI Assistant
               </h2>
               <div className="flex items-center space-x-2 mt-1">
                 <div
                   className={`w-2 h-2 rounded-full ${
-                    aiAssistantEnabled ? "bg-emerald-400 animate-pulse" : "bg-red-400"
+                    aiAssistantEnabled
+                      ? "bg-emerald-400 animate-pulse"
+                      : "bg-red-400"
                   }`}
                 />
-                <span className={`text-sm truncate ${theme === "dark" ? "text-slate-400" : "text-gray-500"}`}>
+                <span
+                  className={`text-sm truncate ${
+                    theme === "dark" ? "text-slate-400" : "text-gray-500"
+                  }`}
+                >
                   {aiAssistantEnabled ? "Online & Ready" : "Offline"}
                 </span>
               </div>
@@ -88,11 +104,19 @@ const AISidebar = ({
                   : "bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20"
               }`}
             >
-              <RiUserLine className={`w-5 h-5 ${theme === "dark" ? "text-blue-400" : "text-blue-600"}`} />
+              <RiUserLine
+                className={`w-5 h-5 ${
+                  theme === "dark" ? "text-blue-400" : "text-blue-600"
+                }`}
+              />
             </div>
             <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-sm font-medium truncate">{user?.firstName || "User"}</span>
-              <span className="text-xs opacity-70 truncate">{user?.primaryEmailAddress?.emailAddress}</span>
+              <span className="text-sm font-medium truncate">
+                {user?.firstName || "User"}
+              </span>
+              <span className="text-xs opacity-70 truncate">
+                {user?.primaryEmailAddress?.emailAddress}
+              </span>
             </div>
           </div>
           <UserButton afterSignOutUrl="/" />
@@ -110,12 +134,24 @@ const AISidebar = ({
                   : "bg-gradient-to-br from-gray-100/50 to-gray-200/50 border border-gray-300/50 shadow-xl"
               }`}
             >
-              <RiRobotLine className={`w-10 h-10 ${theme === "dark" ? "text-slate-500" : "text-gray-400"}`} />
+              <RiRobotLine
+                className={`w-10 h-10 ${
+                  theme === "dark" ? "text-slate-500" : "text-gray-400"
+                }`}
+              />
             </div>
-            <h3 className={`text-lg font-semibold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+            <h3
+              className={`text-lg font-semibold mb-2 ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
               Welcome to AI Assistant
             </h3>
-            <p className={`text-sm ${theme === "dark" ? "text-slate-400" : "text-gray-500"}`}>
+            <p
+              className={`text-sm ${
+                theme === "dark" ? "text-slate-400" : "text-gray-500"
+              }`}
+            >
               Start a conversation with your intelligent coding companion
             </p>
           </div>
@@ -123,7 +159,9 @@ const AISidebar = ({
           chatMessages.map((message) => (
             <div
               key={message.id}
-              className={`flex space-x-4 ${message.type === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex space-x-4 ${
+                message.type === "user" ? "justify-end" : "justify-start"
+              }`}
             >
               {message.type === "ai" && (
                 <div
@@ -143,13 +181,17 @@ const AISidebar = ({
                       ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-blue-500/25"
                       : "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-blue-500/25"
                     : theme === "dark"
-                      ? "bg-gradient-to-br from-slate-700/80 to-slate-800/80 text-gray-200 border border-slate-600/50 backdrop-blur-sm shadow-slate-900/25"
-                      : "bg-gradient-to-br from-white/80 to-gray-50/80 text-gray-900 border border-gray-200/50 backdrop-blur-sm shadow-gray-900/10"
+                    ? "bg-gradient-to-br from-slate-700/80 to-slate-800/80 text-gray-200 border border-slate-600/50 backdrop-blur-sm shadow-slate-900/25"
+                    : "bg-gradient-to-br from-white/80 to-gray-50/80 text-gray-900 border border-gray-200/50 backdrop-blur-sm shadow-gray-900/10"
                 }`}
               >
                 <pre
                   className={`whitespace-pre-wrap text-sm leading-relaxed ${
-                    message.type === "user" ? "text-white" : theme === "dark" ? "text-gray-200" : "text-gray-900"
+                    message.type === "user"
+                      ? "text-white"
+                      : theme === "dark"
+                      ? "text-gray-200"
+                      : "text-gray-900"
                   }`}
                 >
                   {message.content}
@@ -159,8 +201,8 @@ const AISidebar = ({
                     message.type === "user"
                       ? "text-blue-100"
                       : theme === "dark"
-                        ? "text-slate-400"
-                        : "text-gray-500"
+                      ? "text-slate-400"
+                      : "text-gray-500"
                   }`}
                 >
                   {message.timestamp.toLocaleTimeString()}
@@ -242,8 +284,8 @@ const AISidebar = ({
                   ? "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-emerald-500/25"
                   : "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-emerald-500/25"
                 : theme === "dark"
-                  ? "bg-slate-700/50 text-gray-500 cursor-not-allowed border border-slate-600/50"
-                  : "bg-gray-200/50 text-gray-400 cursor-not-allowed border border-gray-300/50"
+                ? "bg-slate-700/50 text-gray-500 cursor-not-allowed border border-slate-600/50"
+                : "bg-gray-200/50 text-gray-400 cursor-not-allowed border border-gray-300/50"
             }`}
           >
             <RiSendPlaneLine className="w-5 h-5" />
@@ -251,7 +293,7 @@ const AISidebar = ({
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AISidebar 
+export default AISidebar;

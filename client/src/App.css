@@ -1,1 +1,85 @@
- /* style your React app here */
+/* style your React app here */
+
+/* Custom styles for inline suggestions */
+.monaco-editor .inline-suggestions {
+  color: #6b7280 !important;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.monaco-editor .inline-suggestions .suggestion-text {
+  color: #10b981 !important;
+  font-weight: 500;
+}
+
+/* Dark theme inline suggestions */
+.monaco-editor.vs-dark .inline-suggestions {
+  color: #9ca3af !important;
+}
+
+.monaco-editor.vs-dark .inline-suggestions .suggestion-text {
+  color: #34d399 !important;
+}
+
+/* Monaco Editor inline suggestion styles */
+.monaco-editor .inline-suggestions {
+  color: #6b7280 !important;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.monaco-editor .inline-suggestions .suggestion-text {
+  color: #10b981 !important;
+  font-weight: 500;
+}
+
+/* Dark theme inline suggestions */
+.monaco-editor.vs-dark .inline-suggestions {
+  color: #9ca3af !important;
+}
+
+.monaco-editor.vs-dark .inline-suggestions .suggestion-text {
+  color: #34d399 !important;
+}
+
+/* Additional Monaco Editor inline suggestion styles */
+.monaco-editor .inline-suggestions {
+  color: #6b7280 !important;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.monaco-editor .inline-suggestions .suggestion-text {
+  color: #10b981 !important;
+  font-weight: 500;
+}
+
+/* Dark theme inline suggestions */
+.monaco-editor.vs-dark .inline-suggestions {
+  color: #9ca3af !important;
+}
+
+.monaco-editor.vs-dark .inline-suggestions .suggestion-text {
+  color: #34d399 !important;
+}
+
+/* Monaco Editor specific inline suggestion styles */
+.monaco-editor .inline-suggestions {
+  color: #6b7280 !important;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.monaco-editor .inline-suggestions .suggestion-text {
+  color: #10b981 !important;
+  font-weight: 500;
+}
+
+/* Dark theme inline suggestions */
+.monaco-editor.vs-dark .inline-suggestions {
+  color: #9ca3af !important;
+}
+
+.monaco-editor.vs-dark .inline-suggestions .suggestion-text {
+  color: #34d399 !important;
+}

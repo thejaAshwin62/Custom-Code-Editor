@@ -312,7 +312,7 @@ console.log(fibonacci(10));`
   };
 
   // Quick save
-  const handleQuickSave = async () => {
+  const handleQuickSave = async (saveData = null) => {
     if (!code.trim()) return;
 
     if (!user) {
@@ -326,11 +326,16 @@ console.log(fibonacci(10));`
     }
 
     try {
+      // Use provided title and description or defaults
+      const title =
+        saveData?.title || `Code Snippet ${new Date().toLocaleString()}`;
+      const description = saveData?.description || "Quick saved code snippet";
+
       const { data, error } = await supabase
         .from(TABLES.USER_CODES)
         .insert({
-          title: `Code Snippet ${new Date().toLocaleString()}`,
-          description: "Quick saved code snippet",
+          title: title,
+          description: description,
           code: code,
           language: language,
           user_id: user.id,
@@ -339,7 +344,12 @@ console.log(fibonacci(10));`
 
       if (error) throw error;
 
-      toast.success("Code saved successfully!");
+      // Show success message with the actual filename
+      if (saveData?.title) {
+        toast.success(`"${saveData.title}" saved successfully!`);
+      } else {
+        toast.success("Code saved successfully!");
+      }
     } catch (error) {
       console.error("Error saving code:", error);
       toast.error("Failed to save code. Please try again.");

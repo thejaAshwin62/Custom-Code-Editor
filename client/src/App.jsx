@@ -50,8 +50,10 @@ function App() {
   const handleGoHome = () => navigate("/");
   const handleShowCodeManager = () => navigate("/code-manager");
   const handleShowCodeTreasure = () => navigate("/code-treasure");
+  const handleShowSettings = () => navigate("/settings");
   const handleBackFromCodeManager = () => navigate("/editor");
   const handleBackFromTreasure = () => navigate("/editor");
+  const handleBackFromSettings = () => navigate("/editor");
 
   // Check if current route is editor
   const isEditorRoute = location.pathname === "/editor";
@@ -117,8 +119,10 @@ function App() {
                 handleShowCodeManager,
                 handleGetStarted,
                 handleShowCodeTreasure,
+                handleShowSettings,
                 handleBackFromCodeManager,
                 handleBackFromTreasure,
+                handleBackFromSettings,
                 handleLoadCode,
                 onBack: handleBackFromCodeManager,
                 onLoadCode: handleLoadCode,
@@ -143,6 +147,7 @@ function App() {
               toggleSidebar={toggleSidebar}
               setChatInput={setChatInput}
               handleChatSubmit={handleChatSubmit}
+              handleShowSettings={handleShowSettings}
             />
           )}
 
@@ -155,6 +160,7 @@ function App() {
               code={code}
               language={language}
               aiAssistantEnabled={aiAssistantEnabled}
+              handleShowSettings={handleShowSettings}
             />
           )}
 
@@ -171,6 +177,7 @@ function App() {
               handleShowCodeManager={handleShowCodeManager}
               handleExplainCode={handleExplainCode}
               handleAutocomplete={handleAutocomplete}
+              handleShowSettings={handleShowSettings}
             />
           )}
         </div>

@@ -17,6 +17,7 @@ import {
   RiPulseLine,
   RiCheckboxCircleLine,
   RiFileCopyLine,
+  RiSettingsLine,
 } from "react-icons/ri";
 
 const OutputSidebar = ({
@@ -26,6 +27,7 @@ const OutputSidebar = ({
   code,
   language,
   aiAssistantEnabled,
+  handleShowSettings,
 }) => {
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
@@ -545,7 +547,7 @@ ${troubleshooting.map((step) => `   ${step}`).join("\n")}
                     ? "bg-slate-700/50 hover:bg-slate-700/70 text-gray-300 border border-slate-600/50"
                     : "bg-gray-200/50 hover:bg-gray-200/70 text-gray-600 border border-gray-300/50"
                 }`}
-                title="Settings"
+                title="Terminal Settings"
                 style={{
                   boxShadow: `
                   inset 0 1px 0 ${
@@ -564,6 +566,33 @@ ${troubleshooting.map((step) => `   ${step}`).join("\n")}
                 <RiSettings3Line
                   className={`w-4 h-4 ${showSettings ? "animate-spin" : ""}`}
                 />
+              </button>
+
+              {/* Main Settings Button */}
+              <button
+                onClick={handleShowSettings}
+                className={`p-2 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+                  theme === "dark"
+                    ? "bg-slate-700/50 hover:bg-slate-700/70 text-blue-400 border border-blue-500/30"
+                    : "bg-gray-200/50 hover:bg-gray-200/70 text-blue-600 border border-blue-500/20"
+                }`}
+                title="App Settings"
+                style={{
+                  boxShadow: `
+                  inset 0 1px 0 ${
+                    theme === "dark"
+                      ? "rgba(255, 255, 255, 0.05)"
+                      : "rgba(255, 255, 255, 0.4)"
+                  },
+                  inset 0 -1px 0 ${
+                    theme === "dark"
+                      ? "rgba(0, 0, 0, 0.1)"
+                      : "rgba(0, 0, 0, 0.02)"
+                  }
+                `,
+                }}
+              >
+                <RiSettingsLine className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -702,8 +731,6 @@ ${troubleshooting.map((step) => `   ${step}`).join("\n")}
                 </div>
                 {(executionTime > 0 || memoryUsage > 0 || status) && (
                   <div className="flex items-center space-x-2">
-                   
-                   
                     {memoryUsage > 0 && (
                       <div
                         className={`flex items-center space-x-2 px-3 py-1 rounded-full text-xs ${
