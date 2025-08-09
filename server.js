@@ -8,6 +8,8 @@ import connectDB from "./config/mongoose/database.js";
 import apiRoutes from "./routes/geminiRoutes.js";
 import imageRoutes from "./routes/imageRoutes.js";
 import codeRoutes from "./routes/codeRoutes.js";
+import geminiUsageRoutes from "./routes/geminiUsageRoutes.js";
+import userApiKeyRoutes from "./routes/userApiKeyRoutes.js";
 // import agentRoutes from "./routes/agentRoutes.js";
 
 dotenv.config();
@@ -27,6 +29,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use("/", apiRoutes);
 app.use("/api", imageRoutes);
 app.use("/api/codes", codeRoutes);
+app.use("/api/gemini-usage", geminiUsageRoutes);
+app.use("/api/user-api-key", userApiKeyRoutes);
 // app.use("/agent", agentRoutes);
 
 app.use(express.static(path.resolve(__dirname, "./public")));

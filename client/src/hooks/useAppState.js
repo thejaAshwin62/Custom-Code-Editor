@@ -143,7 +143,10 @@ console.log(fibonacci(10));`
     setChatMessages((prev) => [...prev, userMessage]);
 
     try {
-      const response = await axios.post("/explain", { code });
+      const response = await axios.post("/explain", {
+        code,
+        userId: user?.id,
+      });
       setExplanation(response.data.explanation);
 
       const aiMessage = {
@@ -180,7 +183,10 @@ console.log(fibonacci(10));`
     setChatMessages((prev) => [...prev, userMessage]);
 
     try {
-      const response = await axios.post("/autocomplete", { code });
+      const response = await axios.post("/autocomplete", {
+        code,
+        userId: user?.id,
+      });
       const suggestion = response.data.suggestion;
 
       setSuggestions([
@@ -240,6 +246,7 @@ console.log(fibonacci(10));`
           message: chatInput,
           currentCode: code,
           language: language,
+          userId: user?.id,
         });
 
         if (response.data.unchanged) {

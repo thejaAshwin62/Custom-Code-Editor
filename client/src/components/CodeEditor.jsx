@@ -248,6 +248,7 @@ body {
           column: position.column,
         },
         language: currentLanguage,
+        userId: user?.id,
         lineContent,
         wordAtPosition: wordAtPosition?.word || "",
       });
@@ -481,6 +482,7 @@ body {
         message: promptInput,
         currentCode: currentCode,
         language: language,
+        userId: user?.id,
       });
 
       if (response.data && response.data.modifiedCode) {

@@ -5,19 +5,18 @@ import {
 } from "@google/generative-ai";
 import * as fs from "fs/promises";
 import dotenv from "dotenv";
+import { getApiKeyForUser } from "./userApiKeyService.js";
 
 dotenv.config();
 
-const apiKey = process.env.GOOGLE_API_KEY;
+const sharedApiKey = process.env.GOOGLE_API_KEY;
 
-if (!apiKey) {
+if (!sharedApiKey) {
   console.error(
-    "Error: API key is missing. Please set the GOOGLE_API_KEY environment variable."
+    "Error: Shared API key is missing. Please set the GOOGLE_API_KEY environment variable."
   );
   process.exit(1);
 }
-
-const genAI = new GoogleGenerativeAI(apiKey);
 
 const generationConfig = {
   temperature: 0,
@@ -43,8 +42,18 @@ const codeModificationConfig = {
   responseMimeType: "text/plain",
 };
 
-async function initializeModel(config = generationConfig) {
+async function initializeModel(config = generationConfig, userId = null) {
   try {
+    // Get the appropriate API key for this user
+    const apiKey = await getApiKeyForUser(userId);
+    
+    if (!apiKey) {
+      throw new Error("No API key available. Please set up your API key or ensure the shared key is configured.");
+    }
+
+    // Create a new GoogleGenerativeAI instance with the user's API key
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
     const model = await genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
       generationConfig: config,
@@ -81,9 +90,9 @@ async function cleanupFile(filePath) {
 }
 
 // Original image processing function
-export async function generateContentFromImageAndText(imagePath, prompt) {
+export async function generateContentFromImageAndText(imagePath, prompt, userId = null) {
   try {
-    const model = await initializeModel();
+    const model = await initializeModel(generationConfig, userId);
     const imagePart = await fileToGenerativePart(imagePath, "image/jpeg");
 
     const result = await model.generateContent([prompt, imagePart]);
@@ -102,9 +111,9 @@ export async function generateContentFromImageAndText(imagePath, prompt) {
 }
 
 // New function for code explanation
-export async function explainCode(code) {
+export async function explainCode(code, userId = null) {
   try {
-    const model = await initializeModel();
+    const model = await initializeModel(generationConfig, userId);
 
     const prompt = `You are a code analysis expert. Provide clear, precise explanations for each line of code. Focus on:
 - Function purpose
@@ -128,9 +137,9 @@ ${code}`;
 }
 
 // New function for code suggestions
-export async function getCodeSuggestion(code) {
+export async function getCodeSuggestion(code, userId = null) {
   try {
-    const model = await initializeModel();
+    const model = await initializeModel(generationConfig, userId);
 
     const prompt = `You are a code completion AI. Respond ONLY with direct code. No explanations, no markdown, no comments about your thought process. Return ONLY the code completion that would naturally follow from the provided code context.
 
@@ -160,10 +169,11 @@ ${code}`;
 export async function getInlineCompletion(
   code,
   position,
-  language = "javascript"
+  language = "javascript",
+  userId = null
 ) {
   try {
-    const model = await initializeModel(codeCompletionConfig);
+    const model = await initializeModel(codeCompletionConfig, userId);
 
     const prompt = `You are an AI code completion assistant like GitHub Copilot. 
           
@@ -211,9 +221,9 @@ ${code}`;
 }
 
 // Helper function for general text generation
-export async function generateText(prompt, config = generationConfig) {
+export async function generateText(prompt, config = generationConfig, userId = null) {
   try {
-    const model = await initializeModel(config);
+    const model = await initializeModel(config, userId);
     const result = await model.generateContent([prompt]);
     const response = await result.response;
 
@@ -228,11 +238,12 @@ export async function generateText(prompt, config = generationConfig) {
 export async function modifyCode(
   message,
   currentCode,
-  language = "javascript"
+  language = "javascript",
+  userId = null
 ) {
   try {
     // First get the modified code
-    const modifiedCodeModel = await initializeModel(codeModificationConfig);
+    const modifiedCodeModel = await initializeModel(codeModificationConfig, userId);
     const codePrompt = `You are an expert AI coding assistant with deep knowledge of ${language}. The user has requested: "${message}".
     
 Current code:
@@ -277,7 +288,7 @@ Return the COMPLETE, MODIFIED CODE (not just the changed parts):`;
     }
 
     // Now get an explanation of what changes were made
-    const explanationModel = await initializeModel();
+    const explanationModel = await initializeModel(generationConfig, userId);
     const explanationPrompt = `You are a helpful coding assistant. The user asked for this code change: "${message}".
 
 Original code:

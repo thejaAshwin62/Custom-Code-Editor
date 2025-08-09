@@ -10,7 +10,8 @@
     "dev:server": "nodemon server.js",
     "dev:client": "cd client && npm run dev",
     "dev:all": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "setup": "mernfinity"
+    "setup": "mernfinity",
+    "test:api-keys": "node test_api_key_management.js"
   },
   "author": "Generated with MERNBoot",
   "license": "MIT",
