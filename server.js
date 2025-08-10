@@ -2,8 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
 import apiRoutes from "./routes/geminiRoutes.js";
 import imageRoutes from "./routes/imageRoutes.js";
 import codeRoutes from "./routes/codeRoutes.js";
@@ -31,7 +29,7 @@ app.use(
 
 app.use(morgan("dev"));
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+
 
 // API Routes
 app.use("/", apiRoutes);
@@ -40,13 +38,6 @@ app.use("/api/codes", codeRoutes);
 app.use("/api/gemini-usage", geminiUsageRoutes);
 app.use("/api/user-api-key", userApiKeyRoutes);
 // app.use("/agent", agentRoutes);
-
-app.use(express.static(path.resolve(__dirname, "./public")));
-
-// Sample Route
-app.get("/", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "./public", "index.html"));
-});
 
 // Start Server and Connect to DB
 app.listen(PORT, async () => {
