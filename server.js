@@ -37,6 +37,10 @@ app.use("/api", imageRoutes);
 app.use("/api/codes", codeRoutes);
 app.use("/api/gemini-usage", geminiUsageRoutes);
 app.use("/api/user-api-key", userApiKeyRoutes);
+
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", message: "Judge0 Compiler Service is running" });
+});
 // app.use("/agent", agentRoutes);
 
 // Start Server and Connect to DB
